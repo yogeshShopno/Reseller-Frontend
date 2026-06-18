@@ -39,29 +39,20 @@ type LeadLabel = {
 
 type ApiLead = {
   _id: string;
-  fullName: string;
+  customerName: string;
   companyName?: string;
   address?: string;
-  contact: string;
-  email: string;
-  leadSource?: ApiSource;
-  leadLabel?: LeadLabel[];
+  CustomerContact: string;
+  customerEmail: string;
+  product?: string;
   leadStatus?: ApiStatus;
-  assignedTo?: ApiUser;
-  priority?: "High" | "Medium" | "Low";
-  lastFollowUp?: string;
-  nextFollowupDate?: string;
-  nextFollowupTime?: string;
-  note?: string;
+  paymentAmount?: number;
   isActive?: boolean;
-  attachments?: { name: string; url?: string }[];
   isLost?: boolean;
   isWon?: boolean;
-  amount?: number;
   lostReason?: string;
   lostDate?: string;
   wonDate?: string;
-  labels?: string[] | LeadLabel[];
 };
 
 type StatusGroup = {
@@ -71,22 +62,15 @@ type StatusGroup = {
 };
 
 type AddLeadForm = {
-  name: string;
+  customerName: string;
   companyName?: string;
   address?: string;
-  phone: string;
-  email: string;
-  source: string;
-  label: string[]; // Added label field
+  CustomerContact: string;
+  customerEmail: string;
+  product?: string;
   status: string;
-  reseller: string;
-  priority: "High" | "Medium" | "Low";
-  lastFollowUp: string;
-  nextFollowupDate?: string;
-  nextFollowupTime?: string;
-  note?: string;
+  paymentAmount?: number;
   isActive?: boolean;
-  attachments?: File[];
 };
 
 export default function LeadsPage() {
@@ -116,22 +100,15 @@ export default function LeadsPage() {
   const [loadingWon, setLoadingWon] = useState(false);
 
   const [addForm, setAddForm] = useState<AddLeadForm>({
-    name: "",
+    customerName: "",
     companyName: "",
     address: "",
-    phone: "",
-    email: "",
-    source: "",
-    label: [],
+    CustomerContact: "",
+    customerEmail: "",
+    product: "",
     status: "",
-    reseller: "",
-    priority: "Medium",
-    lastFollowUp: new Date().toISOString().split("T")[0],
-    nextFollowupDate: "",
-    nextFollowupTime: "",
-    note: "",
+    paymentAmount: 0,
     isActive: true,
-    attachments: [],
   });
 
   // View dialog edit states
@@ -327,16 +304,13 @@ export default function LeadsPage() {
   const handleSaveLead = async () => {
     // Dynamic validation based on settings
     const missingFields: string[] = [];
-    if (requiredFields.includes('fullName') && !addForm.name) missingFields.push('Full Name');
+    if (requiredFields.includes('customerName') && !addForm.customerName) missingFields.push('Customer Name');
     if (requiredFields.includes('companyName') && !addForm.companyName) missingFields.push('Company Name');
     if (requiredFields.includes('address') && !addForm.address) missingFields.push('Address');
-    if (requiredFields.includes('contact') && !addForm.phone) missingFields.push('Phone');
-    if (requiredFields.includes('email') && !addForm.email) missingFields.push('Email');
-    if (requiredFields.includes('leadSource') && !addForm.source) missingFields.push('Source');
+    if (requiredFields.includes('CustomerContact') && !addForm.CustomerContact) missingFields.push('Contact');
+    if (requiredFields.includes('customerEmail') && !addForm.customerEmail) missingFields.push('Email');
+    if (requiredFields.includes('product') && !addForm.product) missingFields.push('Product');
     if (requiredFields.includes('leadStatus') && !addForm.status && !editingLead) missingFields.push('Status');
-    if (requiredFields.includes('assignedTo') && !addForm.reseller) missingFields.push('Assigned Reseller');
-    if (requiredFields.includes('priority') && !addForm.priority) missingFields.push('Priority');
-    if (requiredFields.includes('labels') && (!addForm.label || addForm.label.length === 0)) missingFields.push('Lead Labels');
 
     if (missingFields.length > 0) {
       toast.error(`Required fields missing: ${missingFields.join(', ')}`);
@@ -347,26 +321,20 @@ export default function LeadsPage() {
     try {
       const token = getAuthToken();
       const payload = {
-        fullName: addForm.name.trim(),
+        customerName: addForm.customerName.trim(),
         companyName: addForm.companyName?.trim() || "",
         address: addForm.address?.trim() || "",
-        contact: addForm.phone.trim(),
-        email: addForm.email.trim().toLowerCase(),
-        leadSource: addForm.source,
+        CustomerContact: addForm.CustomerContact.trim(),
+        customerEmail: addForm.customerEmail.trim().toLowerCase(),
+        product: addForm.product?.trim() || "",
         leadStatus: addForm.status,
-        assignedTo: addForm.reseller,
-        priority: addForm.priority.toLowerCase(),
-        lastFollowUp: addForm.lastFollowUp,
-        nextFollowupDate: addForm.nextFollowupDate || null,
-        nextFollowupTime: addForm.nextFollowupTime || null,
-        note: addForm.note?.trim() || "",
+        paymentAmount: addForm.paymentAmount || 0,
         isActive: addForm.isActive ?? true,
-        leadLabel: addForm.label || [], // Include labels in payload
       };
 
       if (editingLead) {
-        // Edit mode - don't include status and next follow-up date
-        const { leadStatus, nextFollowupDate, ...editPayload } = payload;
+        // Edit mode - don't include status
+        const { leadStatus, ...editPayload } = payload;
         await axios.put(`${baseUrl.updateLead}/${editingLead._id}`, editPayload, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -397,22 +365,15 @@ export default function LeadsPage() {
 
   const resetForm = () => {
     setAddForm({
-      name: "",
+      customerName: "",
       companyName: "",
       address: "",
-      phone: "",
-      email: "",
-      source: "",
-      label: [],
+      CustomerContact: "",
+      customerEmail: "",
+      product: "",
       status: "",
-      reseller: "",
-      priority: "Medium",
-      lastFollowUp: new Date().toISOString().split("T")[0],
-      nextFollowupDate: "",
-      nextFollowupTime: "",
-      note: "",
+      paymentAmount: 0,
       isActive: true,
-      attachments: [],
     });
   };
 
@@ -424,32 +385,17 @@ export default function LeadsPage() {
 
     if (!lead) return;
 
-    // Extract label IDs if labels exist
-    let labelIds: string[] = [];
-    if (lead.leadLabel) {
-      labelIds = lead.leadLabel.map((label: any) =>
-        typeof label === 'string' ? label : label._id
-      );
-    }
-
     setEditingLead(lead);
     setAddForm({
-      name: lead.fullName || "",
+      customerName: lead.customerName || "",
       companyName: lead.companyName || "",
       address: lead.address || "",
-      phone: lead.contact || "",
-      email: lead.email || "",
-      source: lead.leadSource?._id || "",
-      label: labelIds,
+      CustomerContact: lead.CustomerContact || "",
+      customerEmail: lead.customerEmail || "",
+      product: lead.product || "",
       status: lead.leadStatus?._id || "",
-      reseller: lead.assignedTo?._id || "",
-      priority: lead.priority || "Medium",
-      lastFollowUp: lead.lastFollowUp || new Date().toISOString().split("T")[0],
-      nextFollowupDate: lead.nextFollowupDate || "",
-      nextFollowupTime: lead.nextFollowupTime || "",
-      note: lead.note || "",
+      paymentAmount: lead.paymentAmount || 0,
       isActive: lead.isActive ?? true,
-      attachments: [],
     });
     setShowAddDialog(true);
   };
@@ -465,8 +411,6 @@ export default function LeadsPage() {
     setViewLead(lead);
     // Initialize edit states with current values
     setEditingStatus(lead.leadStatus?._id || "");
-    setEditingNextFollowupDate(lead.nextFollowupDate || "");
-    setEditingNextFollowupTime(lead.nextFollowupTime || "");
   };
 
   const handleSaveViewChanges = async () => {
@@ -798,56 +742,26 @@ export default function LeadsPage() {
                                 <div className="flex items-start gap-2">
 
                                   {/* Left Content */}
-                                  <div className="flex-1 min-w-0 space-y-2">
-
-                                    <div className="flex items-center gap-2">
-                                      <FiPhone className="h-4 w-4 text-dark flex-shrink-0" />
-                                      <span className="truncate">{lead.contact}</span>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="text-sm font-semibold text-dark truncate mb-1">
+                                      {lead.customerName}
                                     </div>
 
                                     <div className="flex items-center gap-2 min-w-0">
                                       <FiMail className="h-4 w-4 text-dark flex-shrink-0" />
                                       <span className="truncate">
-                                        {lead.email}
+                                        {lead.customerEmail}
                                       </span>
-                                    </div>
-
-                                    <div className="flex items-center gap-2">
-                                      {lead.assignedTo?.avatar ? (
-                                        <img
-                                          src={lead.assignedTo.avatar}
-                                          alt={lead.assignedTo.fullName}
-                                          className="h-6 w-6 rounded-full object-cover"
-                                        />
-                                      ) : (
-                                        <div className="h-6 w-6 rounded-full bg-gradient-to-r from-[#9160ff] to-[#c387ff] flex items-center justify-center text-xs font-semibold text-white">
-                                          {lead.assignedTo?.fullName?.charAt(0).toUpperCase()}
-                                        </div>
-                                      )}
-                                      <span className="truncate">{lead.assignedTo?.fullName || "Unassigned"}</span>
                                     </div>
                                   </div>
 
-                                  {/* Priority Right */}
-                                  {lead.priority && (
-                                    <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-600 capitalize whitespace-nowrap">
-                                      {lead.priority}
+                                  {/* Product Right */}
+                                  {lead.product && (
+                                    <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-600 capitalize whitespace-nowrap">
+                                      {lead.product}
                                     </span>
                                   )}
                                 </div>
-                              </div>
-
-                              {/* Labels */}
-                              <div className="mt-3 flex gap-2 overflow-x-auto whitespace-nowrap">
-                                {lead.leadLabel?.map((label: any) => (
-                                  <span
-                                    key={label._id}
-                                    style={{ backgroundColor: label.color }}
-                                    className="px-2 py-1 text-xs font-medium text-white rounded-md flex-shrink-0"
-                                  >
-                                    {label.name}
-                                  </span>
-                                ))}
                               </div>
                             </div>
                           ))}
@@ -908,12 +822,11 @@ export default function LeadsPage() {
                   <table className="min-w-[1000px] w-full whitespace-nowrap">
                     <thead>
                       <tr className="bg-[#dee2e6] text-black text-xs font-bold">
-                        <th className="px-4 py-3 text-left">Lead Name</th>
+                        <th className="px-4 py-3 text-left">Customer Name</th>
                         <th className="px-4 py-3 text-left">Company</th>
                         <th className="px-4 py-3 text-left">Location</th>
-                        <th className="px-4 py-3 text-left">Contact</th>
+                        <th className="px-4 py-3 text-left">Contact Info</th>
                         <th className="px-4 py-3 text-left">Lost Date</th>
-                        <th className="px-4 py-3 text-left">Assigned To</th>
                         <th className="px-4 py-3 text-left">Reason</th>
                         <th className="sticky right-0 z-10 bg-[#dee2e6] px-4 py-3 text-left shadow-[-4px_0_10px_-3px_rgba(0,0,0,0.1)]">Actions</th>
                       </tr>
@@ -934,7 +847,7 @@ export default function LeadsPage() {
                             <td className="px-4 py-3">
                               <div className="flex flex-col">
                                 <span className="font-semibold text-gray-900">
-                                  {l.fullName}
+                                  {l.customerName}
                                 </span>
                                 <span className="text-xs text-red-600">• Lost</span>
                               </div>
@@ -945,18 +858,17 @@ export default function LeadsPage() {
                               <div className="flex flex-col gap-1 text-sm text-gray-700">
                                 <div className="flex items-center gap-2">
                                   <FiPhone className="h-4 w-4 text-gray-500" />
-                                  {l.contact}
+                                  {l.CustomerContact}
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <FiMail className="h-4 w-4 text-gray-500" />
-                                  {l.email}
+                                  {l.customerEmail}
                                 </div>
                               </div>
                             </td>
                             <td className="px-4 py-3">
                               {l.lostDate ? new Date(l.lostDate).toLocaleDateString() : 'N/A'}
                             </td>
-                            <td className="px-4 py-3">{l.assignedTo?.fullName || '-'}</td>
                             <td className="px-4 py-3">{l.lostReason || 'Not specified'}</td>
                             <td className="sticky right-0 z-10 bg-white px-4 py-3 shadow-[-4px_0_10px_-3px_rgba(0,0,0,0.1)]">
                               <div className="flex gap-2">
@@ -1033,12 +945,11 @@ export default function LeadsPage() {
                   <table className="min-w-[1000px] w-full whitespace-nowrap">
                     <thead>
                       <tr className="bg-[#dee2e6] text-black text-xs font-bold">
-                        <th className="px-4 py-3 text-left">Lead Name</th>
+                        <th className="px-4 py-3 text-left">Customer Name</th>
                         <th className="px-4 py-3 text-left">Company</th>
                         <th className="px-4 py-3 text-left">Location</th>
-                        <th className="px-4 py-3 text-left">Contact</th>
+                        <th className="px-4 py-3 text-left">Contact Info</th>
                         <th className="px-4 py-3 text-left">Won Date</th>
-                        <th className="px-4 py-3 text-left">Assigned To</th>
                         <th className="px-4 py-3 text-left">Amount</th>
                         <th className="sticky right-0 z-10 bg-[#dee2e6] px-4 py-3 text-left shadow-[-4px_0_10px_-3px_rgba(0,0,0,0.1)]">Actions</th>
                       </tr>
@@ -1058,7 +969,7 @@ export default function LeadsPage() {
                           <tr key={l._id} className="border-b">
                             <td className="px-4 py-3">
                               <span className="font-semibold text-gray-900">
-                                {l.fullName}
+                                {l.customerName}
                               </span>
                             </td>
                             <td className="px-4 py-3">{l.companyName}</td>
@@ -1067,20 +978,19 @@ export default function LeadsPage() {
                               <div className="flex flex-col gap-1 text-sm text-gray-700">
                                 <div className="flex items-center gap-2">
                                   <FiPhone className="h-4 w-4 text-gray-500" />
-                                  {l.contact}
+                                  {l.CustomerContact}
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <FiMail className="h-4 w-4 text-gray-500" />
-                                  {l.email}
+                                  {l.customerEmail}
                                 </div>
                               </div>
                             </td>
                             <td className="px-4 py-3">
                               {l.wonDate ? new Date(l.wonDate).toLocaleDateString() : 'N/A'}
                             </td>
-                            <td className="px-4 py-3">{l.assignedTo?.fullName || '-'}</td>
                             <td className="px-4 py-3">
-                              {l.amount ? `₹${l.amount.toLocaleString()}` : "-"}
+                              {l.paymentAmount ? `₹${l.paymentAmount.toLocaleString()}` : "-"}
                             </td>
                             <td className="sticky right-0 z-10 bg-white px-4 py-3 shadow-[-4px_0_10px_-3px_rgba(0,0,0,0.1)]">
                               <div className="flex gap-2">
@@ -1143,13 +1053,39 @@ export default function LeadsPage() {
           <form className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700">
-                Full Name {requiredFields.includes('fullName') && <span className="text-red-500">*</span>}
+                Customer Name {requiredFields.includes('customerName') && <span className="text-red-500">*</span>}
               </label>
               <input
                 type="text"
-                value={addForm.name}
+                value={addForm.customerName}
                 onChange={(e) =>
-                  setAddForm((p) => ({ ...p, name: e.target.value }))
+                  setAddForm((p) => ({ ...p, customerName: e.target.value }))
+                }
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700">
+                Customer Contact {requiredFields.includes('CustomerContact') && <span className="text-red-500">*</span>}
+              </label>
+              <input
+                type="text"
+                value={addForm.CustomerContact}
+                onChange={(e) =>
+                  setAddForm((p) => ({ ...p, CustomerContact: e.target.value }))
+                }
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700">
+                Customer Email {requiredFields.includes('customerEmail') && <span className="text-red-500">*</span>}
+              </label>
+              <input
+                type="email"
+                value={addForm.customerEmail}
+                onChange={(e) =>
+                  setAddForm((p) => ({ ...p, customerEmail: e.target.value }))
                 }
                 className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
               />
@@ -1169,6 +1105,32 @@ export default function LeadsPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
+                Product {requiredFields.includes('product') && <span className="text-red-500">*</span>}
+              </label>
+              <input
+                type="text"
+                value={addForm.product ?? ""}
+                onChange={(e) =>
+                  setAddForm((p) => ({ ...p, product: e.target.value }))
+                }
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700">
+                Payment Amount {requiredFields.includes('paymentAmount') && <span className="text-red-500">*</span>}
+              </label>
+              <input
+                type="number"
+                value={addForm.paymentAmount || 0}
+                onChange={(e) =>
+                  setAddForm((p) => ({ ...p, paymentAmount: Number(e.target.value) }))
+                }
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700">
                 Address {requiredFields.includes('address') && <span className="text-red-500">*</span>}
               </label>
               <textarea
@@ -1180,225 +1142,28 @@ export default function LeadsPage() {
                 className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700">
-                Phone {requiredFields.includes('contact') && <span className="text-red-500">*</span>}
-              </label>
-              <input
-                type="text"
-                value={addForm.phone}
-                onChange={(e) =>
-                  setAddForm((p) => ({ ...p, phone: e.target.value }))
-                }
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700">
-                Email {requiredFields.includes('email') && <span className="text-red-500">*</span>}
-              </label>
-              <input
-                type="email"
-                value={addForm.email}
-                onChange={(e) =>
-                  setAddForm((p) => ({ ...p, email: e.target.value }))
-                }
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Status field only shown in add mode */}
+            {!editingLead && (
               <div>
                 <label className="block text-sm font-medium text-slate-700">
-                  Source {requiredFields.includes('leadSource') && <span className="text-red-500">*</span>}
+                  Status {requiredFields.includes('leadStatus') && <span className="text-red-500">*</span>}
                 </label>
                 <select
-                  value={addForm.source}
-                  onChange={(e) =>
-                    setAddForm((p) => ({ ...p, source: e.target.value }))
-                  }
+                  value={addForm.status}
                   className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                  onChange={(e) =>
+                    setAddForm((p) => ({ ...p, status: e.target.value }))
+                  }
                 >
-                  <option value="">Select Source</option>
-                  {sources.map((s) => (
+                  <option value="">Select Status</option>
+                  {statuses.map((s) => (
                     <option key={s._id} value={s._id}>
                       {s.name}
                     </option>
                   ))}
                 </select>
               </div>
-              {/* Status field only shown in add mode */}
-              {!editingLead && (
-                <div>
-                  <label className="block text-sm font-medium text-slate-700">
-                    Status {requiredFields.includes('leadStatus') && <span className="text-red-500">*</span>}
-                  </label>
-                  <select
-                    value={addForm.status}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
-                    onChange={(e) =>
-                      setAddForm((p) => ({ ...p, status: e.target.value }))
-                    }
-                  >
-                    <option value="">Select Status</option>
-                    {statuses.map((s) => (
-                      <option key={s._id} value={s._id}>
-                        {s.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-              <div>
-                <label className="block text-sm font-medium text-slate-700">
-                  Assigned Reseller {requiredFields.includes('assignedTo') && <span className="text-red-500">*</span>}
-                </label>
-                <select
-                  value={addForm.reseller}
-                  onChange={(e) =>
-                    setAddForm((p) => ({ ...p, reseller: e.target.value }))
-                  }
-                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Reseller</option>
-                  {resellerMembers.map((s) => (
-                    <option key={s._id} value={s._id}>
-                      {s.fullName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700">
-                  Priority {requiredFields.includes('priority') && <span className="text-red-500">*</span>}
-                </label>
-                <select
-                  value={addForm.priority}
-                  onChange={(e) =>
-                    setAddForm((p) => ({
-                      ...p,
-                      priority: e.target.value as AddLeadForm["priority"],
-                    }))
-                  }
-                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
-                >
-                  <option>High</option>
-                  <option>Medium</option>
-                  <option>Low</option>
-                </select>
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700">
-                Lead Labels {requiredFields.includes('labels') && <span className="text-red-500">*</span>}
-              </label>
-
-              <Select
-                isMulti
-                options={leadLabels.map((label) => ({
-                  value: label._id,
-                  label: label.name,
-                }))}
-                value={leadLabels
-                  .filter((label) => addForm.label.includes(label._id))
-                  .map((label) => ({
-                    value: label._id,
-                    label: label.name,
-                  }))}
-                onChange={(selected) => {
-                  const values = selected ? selected.map((item) => item.value) : [];
-                  setAddForm((p) => ({ ...p, label: values }));
-                }}
-                className="mt-1"
-                classNamePrefix="react-select"
-                placeholder="Select labels..."
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700">
-                Last Follow-Up
-              </label>
-              <input
-                type="date"
-                value={addForm.lastFollowUp}
-                onChange={(e) =>
-                  setAddForm((p) => ({ ...p, lastFollowUp: e.target.value }))
-                }
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            {/* Next Follow-up fields only shown in add mode */}
-            {!editingLead && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700">
-                    Next Follow-Up Date
-                  </label>
-                  <input
-                    type="date"
-                    value={addForm.nextFollowupDate ?? ""}
-                    onChange={(e) =>
-                      setAddForm((p) => ({
-                        ...p,
-                        nextFollowupDate: e.target.value,
-                      }))
-                    }
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700">
-                    Next Follow-Up Time
-                  </label>
-                  <input
-                    type="time"
-                    value={addForm.nextFollowupTime ?? ""}
-                    onChange={(e) =>
-                      setAddForm((p) => ({
-                        ...p,
-                        nextFollowupTime: e.target.value,
-                      }))
-                    }
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
             )}
-            <div>
-              <label className="block text-sm font-medium text-slate-700">
-                Note
-              </label>
-              <textarea
-                rows={3}
-                value={addForm.note ?? ""}
-                onChange={(e) =>
-                  setAddForm((p) => ({ ...p, note: e.target.value }))
-                }
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700">
-                Attachments
-              </label>
-              <input
-                type="file"
-                multiple
-                onChange={(e) => {
-                  const files = e.target.files
-                    ? Array.from(e.target.files)
-                    : [];
-                  setAddForm((p) => ({ ...p, attachments: files }));
-                }}
-                className="mt-1 block w-full text-sm text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              />
-              {addForm?.attachments && addForm.attachments.length > 0 && (
-                <ul className="mt-2 space-y-1 text-sm text-slate-600">
-                  {addForm.attachments.map((file, index) => (
-                    <li key={index}>📎 {file.name}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
             <div className="flex items-center gap-2">
               <input
                 id="isActive"

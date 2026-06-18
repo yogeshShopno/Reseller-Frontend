@@ -340,25 +340,23 @@ export default function LeadsKanbanView({
     };
 
     const lostLeadsColumns: Column<ApiLead>[] = [
-        { key: 'fullName', label: 'LEAD NAME', render: (v) => (<div><div className="font-semibold text-gray-900">{v}</div><span className="text-xs text-red-500">• Lost</span></div>) },
-        { key: 'kwRequirement', label: 'KW REQ', render: (v) => <span className="text-sm">{v || '-'}</span> },
-        { key: 'discomName', label: 'DISCOM', render: (v) => <span className="text-sm">{v || '-'}</span> },
-        { key: 'address', label: 'LOCATION', render: (v) => <span className="text-sm">{v || '-'}</span> },
-        { key: 'contact', label: 'CONTACT', render: (v, row) => <ContactCell phone={v} email={row.email} /> },
-        { key: 'lostDate', label: 'LOST DATE', render: (v) => (v ? new Date(v).toLocaleDateString() : 'N/A') },
-        { key: 'assignedTo', label: 'ASSIGNED TO', render: (v) => v?.fullName || '-' },
-        { key: 'lostReason', label: 'REASON', render: (v) => v || 'Not specified' },
+        { key: 'customerName', label: 'CUSTOMER NAME', render: (v) => (<div><div className="font-semibold text-gray-900">{v as string}</div><span className="text-xs text-red-500">• Lost</span></div>) },
+        { key: 'companyName', label: 'COMPANY', render: (v) => <span className="text-sm">{(v as string) || '-'}</span> },
+        { key: 'product', label: 'PRODUCT', render: (v) => <span className="text-sm">{(v as string) || '-'}</span> },
+        { key: 'address', label: 'LOCATION', render: (v) => <span className="text-sm">{(v as string) || '-'}</span> },
+        { key: 'CustomerContact', label: 'CONTACT INFO', render: (v, row) => <ContactCell phone={v as string} email={row.customerEmail} /> },
+        { key: 'lostDate', label: 'LOST DATE', render: (v) => (v ? new Date(v as string).toLocaleDateString() : 'N/A') },
+        { key: 'lostReason', label: 'REASON', render: (v) => (v as string) || 'Not specified' },
     ];
 
     const wonLeadsColumns: Column<ApiLead>[] = [
-        { key: 'fullName', label: 'LEAD NAME', render: (v) => <span className="font-semibold text-gray-900">{v}</span> },
-        { key: 'kwRequirement', label: 'KW REQ', render: (v) => <span className="text-sm">{v || '-'}</span> },
-        { key: 'discomName', label: 'DISCOM', render: (v) => <span className="text-sm">{v || '-'}</span> },
-        { key: 'address', label: 'LOCATION', render: (v) => <span className="text-sm">{v || '-'}</span> },
-        { key: 'contact', label: 'CONTACT', render: (v, row) => <ContactCell phone={v} email={row.email} /> },
-        { key: 'wonDate', label: 'WON DATE', render: (v) => (v ? new Date(v).toLocaleDateString() : 'N/A') },
-        { key: 'assignedTo', label: 'ASSIGNED TO', render: (v) => v?.fullName || '-' },
-        { key: 'paymentAmount', label: 'AMOUNT', render: (v) => (v ? `₹${v.toLocaleString()}` : '-') },
+        { key: 'customerName', label: 'CUSTOMER NAME', render: (v) => <span className="font-semibold text-gray-900">{v as string}</span> },
+        { key: 'companyName', label: 'COMPANY', render: (v) => <span className="text-sm">{(v as string) || '-'}</span> },
+        { key: 'product', label: 'PRODUCT', render: (v) => <span className="text-sm">{(v as string) || '-'}</span> },
+        { key: 'address', label: 'LOCATION', render: (v) => <span className="text-sm">{(v as string) || '-'}</span> },
+        { key: 'CustomerContact', label: 'CONTACT INFO', render: (v, row) => <ContactCell phone={v as string} email={row.customerEmail} /> },
+        { key: 'wonDate', label: 'WON DATE', render: (v) => (v ? new Date(v as string).toLocaleDateString() : 'N/A') },
+        { key: 'paymentAmount', label: 'AMOUNT', render: (v) => (v ? `₹${Number(v).toLocaleString()}` : '-') },
     ];
 
     return (

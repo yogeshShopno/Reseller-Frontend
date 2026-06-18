@@ -53,10 +53,10 @@ export default function LeadAddDialog({
         try {
           setRequiredFields(JSON.parse(saved));
         } catch (e) {
-          setRequiredFields(['fullName', 'contact', 'leadStatus', 'assignedTo']);
+          setRequiredFields(['customerName', 'CustomerContact', 'leadStatus']);
         }
       } else {
-        setRequiredFields(['fullName', 'contact', 'leadStatus', 'assignedTo']);
+        setRequiredFields(['customerName', 'CustomerContact', 'leadStatus']);
       }
     };
 
@@ -67,30 +67,26 @@ export default function LeadAddDialog({
 
   const leadValidationSchema = useMemo(() => {
     let shape: any = {
-      fullName: Yup.string()
-        .min(2, 'Full Name must be at least 2 characters')
-        .max(100, 'Full Name must not exceed 100 characters'),
-      contact: Yup.string()
+      customerName: Yup.string()
+        .min(2, 'Customer Name must be at least 2 characters')
+        .max(100, 'Customer Name must not exceed 100 characters'),
+      CustomerContact: Yup.string()
         .matches(/^\d+$/, 'Only numbers allowed')
         .length(10, 'Mobile number must be exactly 10 digits'),
-      email: Yup.string()
+      customerEmail: Yup.string()
         .email('Invalid email format')
         .max(100, 'Email must not exceed 100 characters'),
-      kwRequirement: Yup.string(),
-      discomName: Yup.string(),
-      leadrefrance: Yup.string(),
-      projecttype: Yup.string(),
+      companyName: Yup.string(),
+      product: Yup.string(),
       address: Yup.string().max(500, 'Address must not exceed 500 characters'),
-      locationLink: Yup.string(),
       leadStatus: Yup.string(),
-      assignedTo: Yup.string(),
+      paymentAmount: Yup.number(),
       isActive: Yup.boolean(),
     };
 
-    if (requiredFields.includes('fullName')) shape.fullName = shape.fullName.required('Full Name is required');
-    if (requiredFields.includes('contact')) shape.contact = shape.contact.required('Mobile Number is required');
+    if (requiredFields.includes('customerName')) shape.customerName = shape.customerName.required('Customer Name is required');
+    if (requiredFields.includes('CustomerContact')) shape.CustomerContact = shape.CustomerContact.required('Mobile Number is required');
     if (requiredFields.includes('leadStatus')) shape.leadStatus = Yup.string().required('Please select a stage');
-    if (requiredFields.includes('assignedTo')) shape.assignedTo = Yup.string().required('Please assign a sales executive');
 
     return Yup.object().shape(shape);
   }, [requiredFields]);
@@ -99,17 +95,14 @@ export default function LeadAddDialog({
 
   const formik = useFormik({
     initialValues: {
-      fullName: '',
-      contact: '',
-      email: '',
-      kwRequirement: '',
-      discomName: '',
-      leadrefrance: '',
-      projecttype: '',
+      customerName: '',
+      CustomerContact: '',
+      customerEmail: '',
+      companyName: '',
+      product: '',
       address: '',
-      locationLink: '',
       leadStatus: '',
-      assignedTo: '',
+      paymentAmount: 0,
       isActive: true,
     },
     validationSchema: leadValidationSchema,
@@ -119,17 +112,14 @@ export default function LeadAddDialog({
       setStatus(null);
       try {
         const payload: any = {
-          fullName: values.fullName.trim(),
-          contact: values.contact.trim(),
-          email: values.email.trim().toLowerCase(),
-          kwRequirement: values.kwRequirement.trim(),
-          discomName: values.discomName,
-          leadrefrance: values.leadrefrance,
-          projecttype: values.projecttype,
-          address: values.address.trim(),
-          locationLink: values.locationLink.trim(),
+          customerName: values.customerName.trim(),
+          CustomerContact: values.CustomerContact.trim(),
+          customerEmail: values.customerEmail.trim().toLowerCase(),
+          companyName: values.companyName?.trim() || "",
+          product: values.product?.trim() || "",
+          address: values.address?.trim() || "",
           leadStatus: values.leadStatus,
-          assignedTo: values.assignedTo,
+          paymentAmount: values.paymentAmount || 0,
           isActive: values.isActive,
         };
 
@@ -211,17 +201,14 @@ export default function LeadAddDialog({
           const dataToUse = leadData || initialData;
           if (dataToUse) {
             formik.setValues({
-              fullName: dataToUse.fullName || '',
-              contact: dataToUse.contact || '',
-              email: dataToUse.email || '',
-              kwRequirement: dataToUse.kwRequirement || '',
-              discomName: dataToUse.discomName || '',
-              leadrefrance: dataToUse.leadrefrance || '',
-              projecttype: dataToUse.projecttype || '',
+              customerName: dataToUse.customerName || '',
+              CustomerContact: dataToUse.CustomerContact || '',
+              customerEmail: dataToUse.customerEmail || '',
+              companyName: dataToUse.companyName || '',
+              product: dataToUse.product || '',
               address: dataToUse.address || '',
-              locationLink: dataToUse.locationLink || '',
               leadStatus: typeof dataToUse.leadStatus === 'string' ? dataToUse.leadStatus : (dataToUse.leadStatus?._id || ''),
-              assignedTo: typeof dataToUse.assignedTo === 'string' ? dataToUse.assignedTo : (dataToUse.assignedTo?._id || ''),
+              paymentAmount: dataToUse.paymentAmount || 0,
               isActive: dataToUse.isActive ?? true,
             });
           }
@@ -286,58 +273,53 @@ export default function LeadAddDialog({
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormInput
-                label="Full Name"
-                name="fullName"
+                label="Customer Name"
+                name="customerName"
                 type="text"
-                value={formik.values.fullName}
+                value={formik.values.customerName}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={getFieldError('fullName')}
-                required={requiredFields.includes('fullName')}
+                error={getFieldError('customerName')}
+                required={requiredFields.includes('customerName')}
               />
-              {/* Mobile Number — numeric only, max 10 digits */}
               <div className="w-full mb-4">
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-sm font-semibold text-gray-700">
                     Mobile Number
-                    {requiredFields.includes('contact') && <span className="text-red-700 ml-1">*</span>}
+                    {requiredFields.includes('CustomerContact') && <span className="text-red-700 ml-1">*</span>}
                   </label>
                 </div>
                 <div className="relative">
                   <input
                     type="tel"
-                    name="contact"
+                    name="CustomerContact"
                     inputMode="numeric"
                     maxLength={10}
-                    value={formik.values.contact}
+                    value={formik.values.CustomerContact}
                     onChange={(e) => {
-                      // Strip any non-digit characters
                       const numericOnly = e.target.value.replace(/\D/g, '').slice(0, 10);
-                      formik.setFieldValue('contact', numericOnly);
+                      formik.setFieldValue('CustomerContact', numericOnly);
                     }}
                     onKeyDown={(e) => {
-                      // Allow: backspace, delete, tab, escape, enter, arrows, home, end
                       const allowed = ['Backspace','Delete','Tab','Escape','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'];
                       if (allowed.includes(e.key)) return;
-                      // Block anything that's not a digit
                       if (!/^\d$/.test(e.key)) e.preventDefault();
                     }}
                     onBlur={formik.handleBlur}
                     placeholder="Enter 10-digit number"
                     className={`w-full px-3 py-2.5 pr-52 rounded-xl bg-white/90 text-gray-800 text-sm outline-none transition-all duration-200 border-2 ${
-                      formik.touched.contact && formik.errors.contact
+                      formik.touched.CustomerContact && formik.errors.CustomerContact
                         ? 'border-red-500 ring-2 ring-red-200'
-                        : formik.values.contact.length === 10
+                        : formik.values.CustomerContact.length === 10
                           ? 'border-green-500 ring-2 ring-green-200'
                           : 'border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200'
                     }`}
                   />
-               
                 </div>
-                {formik.touched.contact && formik.errors.contact && (
+                {formik.touched.CustomerContact && formik.errors.CustomerContact && (
                   <div className="mt-2 flex items-center gap-1.5">
                     <AlertCircle size={14} className="text-red-700 flex-shrink-0" />
-                    <p className="text-red-700 text-xs">{formik.errors.contact}</p>
+                    <p className="text-red-700 text-xs">{formik.errors.CustomerContact as string}</p>
                   </div>
                 )}
               </div>
@@ -346,52 +328,46 @@ export default function LeadAddDialog({
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormInput
                 label="Email"
-                name="email"
+                name="customerEmail"
                 type="email"
-                value={formik.values.email}
+                value={formik.values.customerEmail}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={getFieldError('email')}
-                required={requiredFields.includes('email')}
+                error={getFieldError('customerEmail')}
+                required={requiredFields.includes('customerEmail')}
               />
               <FormInput
-                label="KW Requirement"
-                name="kwRequirement"
+                label="Company Name"
+                name="companyName"
                 type="text"
-                value={formik.values.kwRequirement}
+                value={formik.values.companyName}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={getFieldError('kwRequirement')}
+                error={getFieldError('companyName')}
+                required={requiredFields.includes('companyName')}
               />
             </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <FormSelect
-                label="Discom Name"
-                name="discomName"
-                value={formik.values.discomName || ''}
-                onChange={(val) => { formik.setFieldValue('discomName', val); }}
-                onBlur={() => formik.setFieldTouched('discomName')}
-                options={[
-                  { value: 'DGVCL', label: 'DGVCL' },
-                  { value: 'Torrent Power', label: 'Torrent Power' },
-                ]}
-                error={getFieldError('discomName')}
-                placeholder="Select Discom Name"
+              <FormInput
+                label="Product"
+                name="product"
+                type="text"
+                value={formik.values.product}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={getFieldError('product')}
+                required={requiredFields.includes('product')}
               />
-              <FormSelect
-                label="Lead Refrance"
-                name="leadrefrance"
-                value={formik.values.leadrefrance || ''}
-                onChange={(val) => { formik.setFieldValue('leadrefrance', val); }}
-                onBlur={() => formik.setFieldTouched('leadrefrance')}
-                options={[
-                  { value: 'like', label: 'Link' },
-                  { value: 'facebook', label: 'Facebook' },
-                  { value: 'data', label: 'Data' },
-                ]}
-                error={getFieldError('leadrefrance')}
-                placeholder="Select Lead Refrance"
+              <FormInput
+                label="Payment Amount"
+                name="paymentAmount"
+                type="number"
+                value={formik.values.paymentAmount}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={getFieldError('paymentAmount')}
+                required={requiredFields.includes('paymentAmount')}
               />
             </div>
 
@@ -403,16 +379,7 @@ export default function LeadAddDialog({
               onBlur={formik.handleBlur}
               error={getFieldError('address')}
               as="textarea"
-            />
-
-            <FormInput
-              label="Location Link"
-              name="locationLink"
-              value={formik.values.locationLink}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={getFieldError('locationLink')}
-              as="textarea"
+              required={requiredFields.includes('address')}
             />
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -426,33 +393,6 @@ export default function LeadAddDialog({
                 error={getFieldError('leadStatus')}
                 placeholder="Select Stage"
                 required={requiredFields.includes('leadStatus')}
-              />
-              <FormSelect
-                label="User (For Assign)"
-                name="assignedTo"
-                value={formik.values.assignedTo}
-                onChange={(val) => { formik.setFieldValue('assignedTo', val); }}
-                onBlur={() => formik.setFieldTouched('assignedTo')}
-                options={reseller.map((s) => ({ value: s._id, label: `${s.fullName || s.name!}${s.departmentName ? ` (${s.departmentName})` : ''}` }))}
-                error={getFieldError('assignedTo')}
-                placeholder="Select User"
-                required={requiredFields.includes('assignedTo')}
-              />
-            </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <FormSelect
-                label="Project Type"
-                name="projecttype"
-                value={formik.values.projecttype || ''}
-                onChange={(val) => { formik.setFieldValue('projecttype', val); }}
-                onBlur={() => formik.setFieldTouched('projecttype')}
-                options={[
-                  { value: 'resident', label: 'Resident' },
-                  { value: 'industrial', label: 'Industrial' },
-                  { value: 'commercial', label: 'Commercial' },
-                ]}
-                error={getFieldError('projecttype')}
-                placeholder="Select Lead Refrance"
               />
             </div>
 

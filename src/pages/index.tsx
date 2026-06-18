@@ -547,12 +547,12 @@
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="font-semibold text-gray-900 text-sm">
-                            {lead.fullName || "Unknown"}
+                            {lead.customerName || "Unknown"}
                           </h4>
-                          {lead.contact && (
+                          {lead.CustomerContact && (
                             <span className="text-xs text-gray-500 flex items-center gap-1">
                               <Phone className="h-3 w-3" />
-                              {lead.contact}
+                              {lead.CustomerContact}
                             </span>
                           )}
                         </div>

@@ -836,16 +836,15 @@ export default function LeadViewDialog({ lead, statuses, onClose, onRefresh }: P
       >
         {lead && (
           <div className="space-y-4 text-sm">
-            <h2 className="text-xl font-bold text-gray-900">{lead.fullName}</h2>
+            <h2 className="text-xl font-bold text-gray-900">{lead.customerName}</h2>
 
             {/* Info grid */}
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-              <InfoCard label="KW Requirement" value={lead.kwRequirement} />
-              <InfoCard label="Phone" value={lead.contact} />
-              <InfoCard label="Email" value={lead.email} />
-              <InfoCard label="Discom Name" value={lead.discomName} />
-              <InfoCard label="Lead Reference" value={lead.leadrefrance} />
-              <InfoCard label="Project Type" value={lead.projecttype} />
+              <InfoCard label="Company" value={lead.companyName} />
+              <InfoCard label="Phone" value={lead.CustomerContact} />
+              <InfoCard label="Email" value={lead.customerEmail} />
+              <InfoCard label="Product" value={lead.product} />
+              <InfoCard label="Payment Amount" value={lead.paymentAmount ? `₹${lead.paymentAmount.toLocaleString()}` : '-'} />
               <InfoCard label="Last Follow-Up" value={lead.lastFollowUp} />
               <InfoCard label="Active" value={lead.isActive ? 'Yes' : 'No'} />
             </div>
@@ -865,26 +864,7 @@ export default function LeadViewDialog({ lead, statuses, onClose, onRefresh }: P
               />
             )}
 
-            <div className="rounded-lg border border-gray-200 bg-white p-4">
-              <div className="mb-3 text-sm font-bold text-gray-800">Assigned</div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold text-lg">
-                    {localAssignedTo?.fullName?.charAt(0)?.toUpperCase() || 'U'}
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-900">{localAssignedTo?.fullName || 'Unassigned'}</div>
-                    <div className="text-xs text-gray-500">{assignedToDeptName || localAssignedTo?.role?.name || 'Sales Executive'}</div>
-                  </div>
-                </div>
-                <button
-                  onClick={handleOpenReassign}
-                  className="text-sm font-medium text-blue-600 hover:text-blue-700"
-                >
-                  Reassign
-                </button>
-              </div>
-            </div>
+
             <div className="rounded-lg bg-gray-50 p-4">
               <div className="mb-3 text-sm font-medium text-gray-600">Status</div>
               <div className="flex flex-wrap gap-2">

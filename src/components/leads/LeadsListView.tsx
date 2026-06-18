@@ -26,12 +26,11 @@ type TableLead = {
   name: string;
   contact: string;
   email: string;
-  kwRequirement?: string;
-  discomName?: string;
+  companyName?: string;
+  product?: string;
   address?: string;
-  locationLink?: string;
   status: string;
-  reseller: string;
+  paymentAmount?: number;
   lastFollowUp: string;
   isActive?: boolean;
   _raw?: any;
@@ -78,15 +77,14 @@ interface Props {
 function mapLead(item: any): TableLead {
   return {
     id: item._id,
-    name: item.fullName,
-    contact: item.contact || item.phone,
-    email: item.email,
-    kwRequirement: item.kwRequirement || '-',
-    discomName: item.discomName || '-',
+    name: item.customerName,
+    contact: item.CustomerContact || item.phone,
+    email: item.customerEmail,
+    companyName: item.companyName || '-',
+    product: item.product || '-',
     address: item.address,
-    locationLink: item.locationLink,
     status: item.leadStatus?.name || item.status?.name || '-',
-    reseller: item.assignedTo?.fullName || '-',
+    paymentAmount: item.paymentAmount || 0,
     lastFollowUp: item.updatedAt
       ? new Date(item.updatedAt).toLocaleDateString()
       : '-',
@@ -198,10 +196,9 @@ export default function LeadsListView({
         </div>
       ),
     },
-    { key: 'kwRequirement', label: 'KW REQ' },
-    { key: 'discomName', label: 'DISCOM' },
+    { key: 'companyName', label: 'COMPANY' },
+    { key: 'product', label: 'PRODUCT' },
     { key: 'status', label: 'STATUS' },
-    { key: 'reseller', label: 'ASSIGNED RESELLER' },
     { key: 'lastFollowUp', label: 'LAST FOLLOW-UP' },
     { 
       key: 'paymentAmount', 
@@ -222,9 +219,9 @@ export default function LeadsListView({
       // fallback
       const apiLead: ApiLead = {
         _id: row.id,
-        fullName: row.name,
-        contact: row.phone,
-        email: row.email,
+        customerName: row.name,
+        CustomerContact: row.contact,
+        customerEmail: row.email,
       };
       onView?.(apiLead);
     }
@@ -239,15 +236,14 @@ export default function LeadsListView({
       const apiLead: ApiLead = {
         ...d,
         _id: d._id,
-        fullName: d.fullName,
-        contact: d.contact,
-        email: d.email,
-        kwRequirement: d.kwRequirement,
-        discomName: d.discomName,
+        customerName: d.customerName,
+        CustomerContact: d.CustomerContact,
+        customerEmail: d.customerEmail,
+        companyName: d.companyName,
+        product: d.product,
         address: d.address,
-        locationLink: d.locationLink,
         leadStatus: d.leadStatus,
-        assignedTo: d.assignedTo,
+        paymentAmount: d.paymentAmount,
         isActive: d.isActive,
       };
       onEdit?.(apiLead);

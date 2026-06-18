@@ -5,16 +5,14 @@ import { toast } from 'react-toastify';
 import { Save, CheckCircle2, Circle } from 'lucide-react';
 
 const LEAD_FIELDS = [
-  { id: 'fullName', label: 'Full Name' },
+  { id: 'customerName', label: 'Customer Name' },
   { id: 'companyName', label: 'Company Name' },
   { id: 'address', label: 'Address' },
-  { id: 'contact', label: 'Phone' },
-  { id: 'email', label: 'Email' },
-  { id: 'leadSource', label: 'Source' },
+  { id: 'CustomerContact', label: 'Contact Info' },
+  { id: 'customerEmail', label: 'Email' },
+  { id: 'product', label: 'Product' },
   { id: 'leadStatus', label: 'Status' },
-  { id: 'assignedTo', label: 'Assigned Reseller' },
-  { id: 'priority', label: 'Priority' },
-  { id: 'labels', label: 'Lead Labels' },
+  { id: 'paymentAmount', label: 'Payment Amount' },
 ];
 
 const TASK_FIELDS = [
@@ -40,11 +38,11 @@ export function FieldSettingsContent() {
       try {
         setRequiredLeads(JSON.parse(savedLeads));
       } catch (e) {
-        setRequiredLeads(['fullName', 'contact', 'email', 'leadSource', 'leadStatus', 'assignedTo']);
+        setRequiredLeads(['customerName', 'CustomerContact', 'customerEmail', 'product', 'leadStatus']);
       }
     } else {
       // Defaults
-      setRequiredLeads(['fullName', 'contact', 'email', 'leadSource', 'leadStatus', 'assignedTo']);
+      setRequiredLeads(['customerName', 'CustomerContact', 'customerEmail', 'product', 'leadStatus']);
     }
 
     if (savedTasks) {

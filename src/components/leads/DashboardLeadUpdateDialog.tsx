@@ -7,7 +7,7 @@ import { FormSelect } from '../ui/FormSelect';
 
 interface ApiLead {
   _id: string;
-  fullName?: string;
+  customerName?: string;
   followUps?: any[];
   leadStatus?: any;
   [key: string]: any;

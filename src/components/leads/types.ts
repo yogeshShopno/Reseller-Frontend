@@ -35,17 +35,14 @@ export type ApiFollowUp = {
 
 export type ApiLead = {
   _id: string;
-  fullName: string;
-  contact: string;
-  email: string;
-  kwRequirement?: string;
-  discomName?: string;
-  leadrefrance?: string;
-  projecttype?: string;
+  customerName: string;
+  CustomerContact: string;
+  customerEmail: string;
+  companyName?: string;
+  product?: string;
   address?: string;
-  locationLink?: string;
   leadStatus?: ApiStatus;
-  assignedTo?: ApiUser;
+  paymentAmount?: number;
   isActive?: boolean;
   followUps?: ApiFollowUp[];
   attachments?: {
@@ -58,7 +55,6 @@ export type ApiLead = {
   }[];
   isLost?: boolean;
   isWon?: boolean;
-  amount?: number;
   lostReason?: string;
   lostDate?: string;
   wonDate?: string;
@@ -84,17 +80,14 @@ export type ApiLead = {
 };
 
 export type AddLeadForm = {
-  fullName: string;
-  contact: string;
-  email: string;
-  kwRequirement?: string;
-  discomName?: string;
-  leadrefrance?: string;
-  projecttype?: string;
+  customerName: string;
+  CustomerContact: string;
+  customerEmail: string;
+  companyName?: string;
+  product?: string;
   address?: string;
-  locationLink?: string;
   leadStatus: string;
-  assignedTo: string;
+  paymentAmount?: number;
   isActive?: boolean;
   attachments?: File[];
 };
