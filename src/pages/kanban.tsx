@@ -42,7 +42,7 @@ type ApiLead = {
   customerName: string;
   companyName?: string;
   address?: string;
-  CustomerContact: string;
+  customerContact: string;
   customerEmail: string;
   product?: string;
   leadStatus?: ApiStatus;
@@ -65,7 +65,7 @@ type AddLeadForm = {
   customerName: string;
   companyName?: string;
   address?: string;
-  CustomerContact: string;
+  customerContact: string;
   customerEmail: string;
   product?: string;
   status: string;
@@ -103,7 +103,7 @@ export default function LeadsPage() {
     customerName: "",
     companyName: "",
     address: "",
-    CustomerContact: "",
+    customerContact: "",
     customerEmail: "",
     product: "",
     status: "",
@@ -307,7 +307,7 @@ export default function LeadsPage() {
     if (requiredFields.includes('customerName') && !addForm.customerName) missingFields.push('Customer Name');
     if (requiredFields.includes('companyName') && !addForm.companyName) missingFields.push('Company Name');
     if (requiredFields.includes('address') && !addForm.address) missingFields.push('Address');
-    if (requiredFields.includes('CustomerContact') && !addForm.CustomerContact) missingFields.push('Contact');
+    if (requiredFields.includes('customerContact') && !addForm.customerContact) missingFields.push('Contact');
     if (requiredFields.includes('customerEmail') && !addForm.customerEmail) missingFields.push('Email');
     if (requiredFields.includes('product') && !addForm.product) missingFields.push('Product');
     if (requiredFields.includes('leadStatus') && !addForm.status && !editingLead) missingFields.push('Status');
@@ -324,7 +324,7 @@ export default function LeadsPage() {
         customerName: addForm.customerName.trim(),
         companyName: addForm.companyName?.trim() || "",
         address: addForm.address?.trim() || "",
-        CustomerContact: addForm.CustomerContact.trim(),
+        customerContact: addForm.customerContact.trim(),
         customerEmail: addForm.customerEmail.trim().toLowerCase(),
         product: addForm.product?.trim() || "",
         leadStatus: addForm.status,
@@ -368,7 +368,7 @@ export default function LeadsPage() {
       customerName: "",
       companyName: "",
       address: "",
-      CustomerContact: "",
+      customerContact: "",
       customerEmail: "",
       product: "",
       status: "",
@@ -390,7 +390,7 @@ export default function LeadsPage() {
       customerName: lead.customerName || "",
       companyName: lead.companyName || "",
       address: lead.address || "",
-      CustomerContact: lead.CustomerContact || "",
+      customerContact: lead.customerContact || "",
       customerEmail: lead.customerEmail || "",
       product: lead.product || "",
       status: lead.leadStatus?._id || "",
@@ -858,7 +858,7 @@ export default function LeadsPage() {
                               <div className="flex flex-col gap-1 text-sm text-gray-700">
                                 <div className="flex items-center gap-2">
                                   <FiPhone className="h-4 w-4 text-gray-500" />
-                                  {l.CustomerContact}
+                                  {l.customerContact}
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <FiMail className="h-4 w-4 text-gray-500" />
@@ -978,7 +978,7 @@ export default function LeadsPage() {
                               <div className="flex flex-col gap-1 text-sm text-gray-700">
                                 <div className="flex items-center gap-2">
                                   <FiPhone className="h-4 w-4 text-gray-500" />
-                                  {l.CustomerContact}
+                                  {l.customerContact}
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <FiMail className="h-4 w-4 text-gray-500" />
@@ -1066,13 +1066,13 @@ export default function LeadsPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
-                Customer Contact {requiredFields.includes('CustomerContact') && <span className="text-red-500">*</span>}
+                Customer Contact {requiredFields.includes('customerContact') && <span className="text-red-500">*</span>}
               </label>
               <input
                 type="text"
-                value={addForm.CustomerContact}
+                value={addForm.customerContact}
                 onChange={(e) =>
-                  setAddForm((p) => ({ ...p, CustomerContact: e.target.value }))
+                  setAddForm((p) => ({ ...p, customerContact: e.target.value }))
                 }
                 className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
               />

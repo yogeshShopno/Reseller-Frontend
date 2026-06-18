@@ -8,7 +8,7 @@ const LEAD_FIELDS = [
   { id: 'customerName', label: 'Customer Name' },
   { id: 'companyName', label: 'Company Name' },
   { id: 'address', label: 'Address' },
-  { id: 'CustomerContact', label: 'Contact Info' },
+  { id: 'customerContact', label: 'Contact Info' },
   { id: 'customerEmail', label: 'Email' },
   { id: 'product', label: 'Product' },
   { id: 'leadStatus', label: 'Status' },
@@ -38,11 +38,11 @@ export function FieldSettingsContent() {
       try {
         setRequiredLeads(JSON.parse(savedLeads));
       } catch (e) {
-        setRequiredLeads(['customerName', 'CustomerContact', 'customerEmail', 'product', 'leadStatus']);
+        setRequiredLeads(['customerName', 'customerContact', 'customerEmail', 'product', 'leadStatus']);
       }
     } else {
       // Defaults
-      setRequiredLeads(['customerName', 'CustomerContact', 'customerEmail', 'product', 'leadStatus']);
+      setRequiredLeads(['customerName', 'customerContact', 'customerEmail', 'product', 'leadStatus']);
     }
 
     if (savedTasks) {
@@ -73,7 +73,7 @@ export function FieldSettingsContent() {
     localStorage.setItem('leadRequiredFields', JSON.stringify(requiredLeads));
     localStorage.setItem('taskRequiredFields', JSON.stringify(requiredTasks));
     toast.success('Field requirements saved successfully');
-    
+
     // Dispatch custom event to notify other components
     window.dispatchEvent(new Event('fieldSettingsUpdated'));
   };
@@ -106,11 +106,10 @@ export function FieldSettingsContent() {
             {LEAD_FIELDS.map(field => (
               <label
                 key={field.id}
-                className={`flex items-center justify-between p-3 rounded-lg border transition-all cursor-pointer ${
-                  requiredLeads.includes(field.id)
+                className={`flex items-center justify-between p-3 rounded-lg border transition-all cursor-pointer ${requiredLeads.includes(field.id)
                     ? 'bg-blue-50 border-blue-200 text-blue-700'
                     : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
-                }`}
+                  }`}
               >
                 <span className="font-medium">{field.label}</span>
                 <input
@@ -138,11 +137,10 @@ export function FieldSettingsContent() {
             {TASK_FIELDS.map(field => (
               <label
                 key={field.id}
-                className={`flex items-center justify-between p-3 rounded-lg border transition-all cursor-pointer ${
-                  requiredTasks.includes(field.id)
+                className={`flex items-center justify-between p-3 rounded-lg border transition-all cursor-pointer ${requiredTasks.includes(field.id)
                     ? 'bg-blue-50 border-blue-200 text-blue-700'
                     : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
-                }`}
+                  }`}
               >
                 <span className="font-medium">{field.label}</span>
                 <input

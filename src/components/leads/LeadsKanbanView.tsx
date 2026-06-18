@@ -73,7 +73,7 @@ export default function LeadsKanbanView({
     const [updatingId, setUpdatingId] = useState<string | null>(null);
     const [projectDetailLead, setProjectDetailLead] = useState<ApiLead | null>(null);
     const [paymentLead, setPaymentLead] = useState<ApiLead | null>(null);
-    
+
     // Board state
     const [boardLeads, setBoardLeads] = useState<Record<string, ApiLead[]>>({});
     const [columnLoading, setColumnLoading] = useState<Record<string, boolean>>({});
@@ -194,11 +194,11 @@ export default function LeadsKanbanView({
 
         const targetStatus = statuses.find((s) => s._id === newStatusId);
         if (!targetStatus) return;
-        
+
         const currentDropId = draggingId;
         setDraggingId(null);
         setUpdatingId(currentDropId);
-        
+
         // Optimistic UI update
         setBoardLeads(prev => {
             const next = { ...prev };
@@ -220,11 +220,11 @@ export default function LeadsKanbanView({
                 { headers: { Authorization: `Bearer ${token()}` } }
             );
             toast.success(`Lead moved to ${targetStatus.name}`);
-            
+
             // SILENT RE-FETCH: sync counts/order etc in background without showing loaders
             fetchStatusLeads(sourceStatusId, 1, false, true);
             fetchStatusLeads(newStatusId, 1, false, true);
-            
+
             onRefresh();
         } catch {
             toast.error('Failed to update lead status');
@@ -293,12 +293,12 @@ export default function LeadsKanbanView({
                 return { reason, date };
             }
         });
-        
+
         if (formValues) {
             try {
                 const lostStatusId = statuses.find(s => s.name.match(/^lost$/i))?._id;
-                await axios.put(`${baseUrl.updateLead}/${id}`, 
-                    { leadStatus: lostStatusId, lostReason: formValues.reason, lostDate: formValues.date }, 
+                await axios.put(`${baseUrl.updateLead}/${id}`,
+                    { leadStatus: lostStatusId, lostReason: formValues.reason, lostDate: formValues.date },
                     { headers: { Authorization: `Bearer ${token()}` } }
                 );
                 toast.success('Lead marked as lost');
@@ -344,7 +344,7 @@ export default function LeadsKanbanView({
         { key: 'companyName', label: 'COMPANY', render: (v) => <span className="text-sm">{(v as string) || '-'}</span> },
         { key: 'product', label: 'PRODUCT', render: (v) => <span className="text-sm">{(v as string) || '-'}</span> },
         { key: 'address', label: 'LOCATION', render: (v) => <span className="text-sm">{(v as string) || '-'}</span> },
-        { key: 'CustomerContact', label: 'CONTACT INFO', render: (v, row) => <ContactCell phone={v as string} email={row.customerEmail} /> },
+        { key: 'customerContact', label: 'CONTACT INFO', render: (v, row) => <ContactCell phone={v as string} email={row.customerEmail} /> },
         { key: 'lostDate', label: 'LOST DATE', render: (v) => (v ? new Date(v as string).toLocaleDateString() : 'N/A') },
         { key: 'lostReason', label: 'REASON', render: (v) => (v as string) || 'Not specified' },
     ];
@@ -354,7 +354,7 @@ export default function LeadsKanbanView({
         { key: 'companyName', label: 'COMPANY', render: (v) => <span className="text-sm">{(v as string) || '-'}</span> },
         { key: 'product', label: 'PRODUCT', render: (v) => <span className="text-sm">{(v as string) || '-'}</span> },
         { key: 'address', label: 'LOCATION', render: (v) => <span className="text-sm">{(v as string) || '-'}</span> },
-        { key: 'CustomerContact', label: 'CONTACT INFO', render: (v, row) => <ContactCell phone={v as string} email={row.customerEmail} /> },
+        { key: 'customerContact', label: 'CONTACT INFO', render: (v, row) => <ContactCell phone={v as string} email={row.customerEmail} /> },
         { key: 'wonDate', label: 'WON DATE', render: (v) => (v ? new Date(v as string).toLocaleDateString() : 'N/A') },
         { key: 'paymentAmount', label: 'AMOUNT', render: (v) => (v ? `₹${Number(v).toLocaleString()}` : '-') },
     ];
@@ -369,28 +369,26 @@ export default function LeadsKanbanView({
                         const label = v === 'board' ? 'Kanban View' : v === 'lost' ? 'Lost Leads' : 'Won Leads';
                         const count = v === 'lost' ? lostCount : v === 'won' ? wonCount : null;
                         return (
-                        <button
-                            key={v}
-                            onClick={() => handleSubViewChange(v)}
-                            className={`flex items-center gap-2 rounded-lg cursor-pointer px-4 py-1.5 text-sm font-medium capitalize transition-colors ${
-                                subView === v
-                                    ? 'border border-[#F28522] text-[#F28522] bg-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-transparent'
-                            }`}
-                        >
-                            {label}
-                            {count !== null && (
-                                <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${
-                                    subView === v
-                                        ? 'bg-[#F28522] text-white'
-                                        : v === 'lost'
-                                            ? 'bg-red-100 text-red-700'
-                                            : 'bg-green-100 text-green-700'
-                                }`}>
-                                    {count}
-                                </span>
-                            )}
-                        </button>
+                            <button
+                                key={v}
+                                onClick={() => handleSubViewChange(v)}
+                                className={`flex items-center gap-2 rounded-lg cursor-pointer px-4 py-1.5 text-sm font-medium capitalize transition-colors ${subView === v
+                                        ? 'border border-[#F28522] text-[#F28522] bg-white'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-transparent'
+                                    }`}
+                            >
+                                {label}
+                                {count !== null && (
+                                    <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${subView === v
+                                            ? 'bg-[#F28522] text-white'
+                                            : v === 'lost'
+                                                ? 'bg-red-100 text-red-700'
+                                                : 'bg-green-100 text-green-700'
+                                        }`}>
+                                        {count}
+                                    </span>
+                                )}
+                            </button>
                         );
                     })}
                 </div>

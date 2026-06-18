@@ -36,7 +36,7 @@ export type ApiFollowUp = {
 export type ApiLead = {
   _id: string;
   customerName: string;
-  CustomerContact: string;
+  customerContact: string;
   customerEmail: string;
   companyName?: string;
   product?: string;
@@ -81,7 +81,7 @@ export type ApiLead = {
 
 export type AddLeadForm = {
   customerName: string;
-  CustomerContact: string;
+  customerContact: string;
   customerEmail: string;
   companyName?: string;
   product?: string;
@@ -97,4 +97,4 @@ export type LeadCountSummary = {
   totalLeads: number;
   totalLost: number;
   totalWon: number;
-};
+};

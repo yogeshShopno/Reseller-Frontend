@@ -536,7 +536,7 @@ export default function LeadViewDialog({ lead, statuses, onClose, onRefresh }: P
   const filteredFollowUps = useMemo(() => {
     if (!followUpSearch.trim()) return localFollowUps;
     const search = followUpSearch.toLowerCase();
-    return localFollowUps.filter(f => 
+    return localFollowUps.filter(f =>
       (f.note?.toLowerCase() || '').includes(search) ||
       (f.date?.toLowerCase() || '').includes(search) ||
       (f.time?.toLowerCase() || '').includes(search) ||
@@ -594,7 +594,7 @@ export default function LeadViewDialog({ lead, statuses, onClose, onRefresh }: P
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!lead || !e.target.files || e.target.files.length === 0) return;
-    
+
     setSaving(true);
     try {
       const formData = new FormData();
@@ -605,18 +605,18 @@ export default function LeadViewDialog({ lead, statuses, onClose, onRefresh }: P
       const response = await axios.put(
         `${baseUrl.updateLead}/${lead._id}`,
         formData,
-        { 
-          headers: { 
+        {
+          headers: {
             Authorization: `Bearer ${getAuthToken()}`,
             'Content-Type': 'multipart/form-data'
-          } 
+          }
         }
       );
-      
+
       if (response.data?.data?.attachments) {
         setLocalAttachments(response.data.data.attachments);
       }
-      
+
       toast.success('Attachments uploaded successfully');
       onRefresh();
     } catch (error: any) {
@@ -709,7 +709,7 @@ export default function LeadViewDialog({ lead, statuses, onClose, onRefresh }: P
     if (!window.confirm(`Are you sure you want to delete "${attachment.originalName}"?`)) {
       return;
     }
-    
+
     try {
       await axios.delete(
         `${baseUrl.getBaseUrl?.endsWith('/') ? baseUrl.getBaseUrl.slice(0, -1) : baseUrl.getBaseUrl}/lead/${lead?._id}/attachments/${attachment._id}`,
@@ -780,7 +780,7 @@ export default function LeadViewDialog({ lead, statuses, onClose, onRefresh }: P
   const handleDownload = async (attachment: any) => {
     try {
       const fileUrl = attachment.path?.startsWith('http') ? attachment.path : `${process.env.NEXT_PUBLIC_IMAGE_URL}${attachment.path}`;
-      
+
       // External URLs block CORS on fetch, so just open in new tab for them
       if (attachment.path?.startsWith('http')) {
         window.open(fileUrl, '_blank');
@@ -841,7 +841,7 @@ export default function LeadViewDialog({ lead, statuses, onClose, onRefresh }: P
             {/* Info grid */}
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
               <InfoCard label="Company" value={lead.companyName} />
-              <InfoCard label="Phone" value={lead.CustomerContact} />
+              <InfoCard label="Phone" value={lead.customerContact} />
               <InfoCard label="Email" value={lead.customerEmail} />
               <InfoCard label="Product" value={lead.product} />
               <InfoCard label="Payment Amount" value={lead.paymentAmount ? `₹${lead.paymentAmount.toLocaleString()}` : '-'} />
@@ -854,13 +854,13 @@ export default function LeadViewDialog({ lead, statuses, onClose, onRefresh }: P
 
             {/* Location Link */}
             {lead.locationLink && (
-              <InfoCard 
-                label="Location Link" 
+              <InfoCard
+                label="Location Link"
                 value={
                   <a href={lead.locationLink} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline break-all">
                     {lead.locationLink}
                   </a>
-                } 
+                }
               />
             )}
 
@@ -963,7 +963,7 @@ export default function LeadViewDialog({ lead, statuses, onClose, onRefresh }: P
                       </p>
                     )}
                   </div>
-                  
+
                   {/* Table */}
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
@@ -1076,7 +1076,7 @@ export default function LeadViewDialog({ lead, statuses, onClose, onRefresh }: P
                   </button>
                 </div>
               </div>
-              
+
               {localAttachments && localAttachments.length > 0 ? (
                 <div className="space-y-2">
                   {localAttachments.map((att: any, idx) => {

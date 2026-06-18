@@ -53,10 +53,10 @@ export default function LeadAddDialog({
         try {
           setRequiredFields(JSON.parse(saved));
         } catch (e) {
-          setRequiredFields(['customerName', 'CustomerContact', 'leadStatus']);
+          setRequiredFields(['customerName', 'customerContact', 'leadStatus']);
         }
       } else {
-        setRequiredFields(['customerName', 'CustomerContact', 'leadStatus']);
+        setRequiredFields(['customerName', 'customerContact', 'leadStatus']);
       }
     };
 
@@ -70,7 +70,7 @@ export default function LeadAddDialog({
       customerName: Yup.string()
         .min(2, 'Customer Name must be at least 2 characters')
         .max(100, 'Customer Name must not exceed 100 characters'),
-      CustomerContact: Yup.string()
+      customerContact: Yup.string()
         .matches(/^\d+$/, 'Only numbers allowed')
         .length(10, 'Mobile number must be exactly 10 digits'),
       customerEmail: Yup.string()
@@ -85,7 +85,7 @@ export default function LeadAddDialog({
     };
 
     if (requiredFields.includes('customerName')) shape.customerName = shape.customerName.required('Customer Name is required');
-    if (requiredFields.includes('CustomerContact')) shape.CustomerContact = shape.CustomerContact.required('Mobile Number is required');
+    if (requiredFields.includes('customerContact')) shape.customerContact = shape.customerContact.required('Mobile Number is required');
     if (requiredFields.includes('leadStatus')) shape.leadStatus = Yup.string().required('Please select a stage');
 
     return Yup.object().shape(shape);
@@ -96,7 +96,7 @@ export default function LeadAddDialog({
   const formik = useFormik({
     initialValues: {
       customerName: '',
-      CustomerContact: '',
+      customerContact: '',
       customerEmail: '',
       companyName: '',
       product: '',
@@ -113,7 +113,7 @@ export default function LeadAddDialog({
       try {
         const payload: any = {
           customerName: values.customerName.trim(),
-          CustomerContact: values.CustomerContact.trim(),
+          customerContact: values.customerContact.trim(),
           customerEmail: values.customerEmail.trim().toLowerCase(),
           companyName: values.companyName?.trim() || "",
           product: values.product?.trim() || "",
@@ -202,7 +202,7 @@ export default function LeadAddDialog({
           if (dataToUse) {
             formik.setValues({
               customerName: dataToUse.customerName || '',
-              CustomerContact: dataToUse.CustomerContact || '',
+              customerContact: dataToUse.customerContact || '',
               customerEmail: dataToUse.customerEmail || '',
               companyName: dataToUse.companyName || '',
               product: dataToUse.product || '',
@@ -286,40 +286,39 @@ export default function LeadAddDialog({
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-sm font-semibold text-gray-700">
                     Mobile Number
-                    {requiredFields.includes('CustomerContact') && <span className="text-red-700 ml-1">*</span>}
+                    {requiredFields.includes('customerContact') && <span className="text-red-700 ml-1">*</span>}
                   </label>
                 </div>
                 <div className="relative">
                   <input
                     type="tel"
-                    name="CustomerContact"
+                    name="customerContact"
                     inputMode="numeric"
                     maxLength={10}
-                    value={formik.values.CustomerContact}
+                    value={formik.values.customerContact}
                     onChange={(e) => {
                       const numericOnly = e.target.value.replace(/\D/g, '').slice(0, 10);
-                      formik.setFieldValue('CustomerContact', numericOnly);
+                      formik.setFieldValue('customerContact', numericOnly);
                     }}
                     onKeyDown={(e) => {
-                      const allowed = ['Backspace','Delete','Tab','Escape','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'];
+                      const allowed = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
                       if (allowed.includes(e.key)) return;
                       if (!/^\d$/.test(e.key)) e.preventDefault();
                     }}
                     onBlur={formik.handleBlur}
                     placeholder="Enter 10-digit number"
-                    className={`w-full px-3 py-2.5 pr-52 rounded-xl bg-white/90 text-gray-800 text-sm outline-none transition-all duration-200 border-2 ${
-                      formik.touched.CustomerContact && formik.errors.CustomerContact
+                    className={`w-full px-3 py-2.5 pr-52 rounded-xl bg-white/90 text-gray-800 text-sm outline-none transition-all duration-200 border-2 ${formik.touched.customerContact && formik.errors.customerContact
                         ? 'border-red-500 ring-2 ring-red-200'
-                        : formik.values.CustomerContact.length === 10
+                        : formik.values.customerContact.length === 10
                           ? 'border-green-500 ring-2 ring-green-200'
                           : 'border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200'
-                    }`}
+                      }`}
                   />
                 </div>
-                {formik.touched.CustomerContact && formik.errors.CustomerContact && (
+                {formik.touched.customerContact && formik.errors.customerContact && (
                   <div className="mt-2 flex items-center gap-1.5">
                     <AlertCircle size={14} className="text-red-700 flex-shrink-0" />
-                    <p className="text-red-700 text-xs">{formik.errors.CustomerContact as string}</p>
+                    <p className="text-red-700 text-xs">{formik.errors.customerContact as string}</p>
                   </div>
                 )}
               </div>
