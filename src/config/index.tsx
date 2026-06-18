@@ -4,9 +4,9 @@ export const baseUrl = {
   // ── Auth ──────────────────────────────────────────────────────────────
   userSignup: `${API}users/signup`,
   userLogin: `${API}auth/login`,           // Unified login via Reseller model
-  currentStaff: `${API}reseller/me`,           // Get current logged-in admin
+  currentReseller: `${API}reseller/me`,           // Get current logged-in admin
 
-  // ── Users (Staff) ─────────────────────────────────────────────────────
+  // ── Users (Reseller) ─────────────────────────────────────────────────────
   userAdd: `${API}reseller/create`,
   userUpdate: `${API}reseller`,
   getAllUsers: `${API}reseller`,
@@ -22,12 +22,12 @@ export const baseUrl = {
   deleteRole: `${API}role`,
   department: `${API}role`,
 
-  // ── Staff (internal users - kept for reference) ───────────────────────
-  addStaff: `${API}reseller/create`,
-  getAllStaff: `${API}reseller`,
-  findStaffById: `${API}reseller`,
-  updateStaff: `${API}reseller`,
-  deleteStaff: `${API}reseller`,
+  // ── Reseller (internal users - kept for reference) ───────────────────────
+  addReseller: `${API}reseller/create`,
+  getAllReseller: `${API}reseller`,
+  findResellerById: `${API}reseller`,
+  updateReseller: `${API}reseller`,
+  deleteReseller: `${API}reseller`,
 
   // ── Leads ─────────────────────────────────────────────────────────────
   addLead: `${API}lead/create`,

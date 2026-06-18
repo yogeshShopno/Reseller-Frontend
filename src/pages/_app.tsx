@@ -26,7 +26,7 @@ export default function App({ Component, pageProps }: AppProps) {
     if (pathName === "/leads/kanban") return "Leads Kanban"
     if (pathName === "/setup") return "Setup"
     if (pathName === "/tasks") return "Tasks"
-    if (pathName === "/user-list") return "User"
+    if (pathName === "/reseller") return "User"
     if (pathName === "/roles") return "Department Management"
     return ""
   }

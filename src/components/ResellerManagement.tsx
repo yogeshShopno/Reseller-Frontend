@@ -11,7 +11,7 @@ import FormInput from './ui/Input';
 import FormSelect, { FormMultiSelect } from './ui/FormSelect';
 import { FiCamera } from 'react-icons/fi';
 
-interface Staff {
+interface Reseller {
   id?: string;
   image?: string;
   fullName: string;
@@ -24,7 +24,7 @@ interface Staff {
   status?: string;
 }
 
-interface StaffManagementProps {
+interface ResellerManagementProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: any) => void;
@@ -47,15 +47,15 @@ const validationSchema = Yup.object({
     then: (schema) => schema.required('Password is required').min(6, 'Password must be at least 6 characters'),
     otherwise: (schema) => schema.notRequired(),
   }),
-  role: Yup.string().required('Role is required'),
+  role: Yup.string(),
 });
 
-export default function StaffManagement({
+export default function ResellerManagement({
   isOpen,
   onClose,
   onSubmit: parentOnSubmit,
   initialData,
-}: StaffManagementProps) {
+}: ResellerManagementProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -181,11 +181,11 @@ export default function StaffManagement({
       const headers = { Authorization: `Bearer ${token}` };
 
       const response = isUpdate
-        ? await axios.put(`${baseUrl.updateStaff}/${values.id}`, payload, { headers })
-        : await axios.post(baseUrl.addStaff, payload, { headers });
+        ? await axios.put(`${baseUrl.updateReseller}/${values.id}`, payload, { headers })
+        : await axios.post(baseUrl.addReseller, payload, { headers });
 
       parentOnSubmit?.(response.data);
-      toast.success(isUpdate ? 'Staff updated successfully' : 'Staff created successfully');
+      toast.success(isUpdate ? 'Reseller updated successfully' : 'Reseller created successfully');
 
       if (!isUpdate) resetForm();
       onClose();
@@ -202,20 +202,20 @@ export default function StaffManagement({
     <Dialog
       isOpen={isOpen}
       onClose={onClose}
-      title={isUpdate ? 'Edit Staff' : 'Add Staff'}
+      title={isUpdate ? 'Edit Reseller' : 'Add Reseller'}
       size="lg"
       footer={
         <>
           <button onClick={onClose} className="px-4 py-2 cursor-pointer rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-50" disabled={loading}>
             Cancel
           </button>
-          <button type="submit" form="staff-form" className="px-4 py-2 cursor-pointer rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50" disabled={loading || !formik.isValid}>
+          <button type="submit" form="reseller-form" className="px-4 py-2 cursor-pointer rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50" disabled={loading || !formik.isValid}>
             {loading ? 'Saving...' : isUpdate ? 'Update' : 'Add'}
           </button>
         </>
       }
     >
-      <form id="staff-form" onSubmit={formik.handleSubmit} className="space-y-6">
+      <form id="reseller-form" onSubmit={formik.handleSubmit} className="space-y-6">
         {error && <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">{error}</div>}
 
         {/* Profile Image */}
@@ -278,12 +278,11 @@ export default function StaffManagement({
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FormSelect
-            label="Role"
+            label="Role (Leave empty for default Reseller)"
             name="role"
             value={formik.values.role}
             onChange={(val) => formik.setFieldValue('role', val)}
             options={roles}
-            required
           />
           <FormSelect
             label="Status"

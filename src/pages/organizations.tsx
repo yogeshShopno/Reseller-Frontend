@@ -72,7 +72,7 @@ export function OrganizationsContent() {
   useEffect(() => {
     if (!token) return;
     axios
-      .get(baseUrl.currentStaff, {
+      .get(baseUrl.currentReseller, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
@@ -184,7 +184,7 @@ export function OrganizationsContent() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Organizations</h1>
         <p className="text-gray-600">
-          Manage organizations in your system. Organizations help group teams and staff members.
+          Manage organizations in your system. Organizations help group teams and reseller members.
         </p>
       </div>
 
@@ -242,7 +242,7 @@ export function OrganizationsContent() {
             Are you sure you want to delete organization "<strong>{toDelete?.name}</strong>"?
           </p>
           <p className="mt-2 text-sm text-red-600">
-            ⚠️ This action cannot be undone. All teams and staff members in this organization will be affected.
+            ⚠️ This action cannot be undone. All teams and reseller members in this organization will be affected.
           </p>
         </div>
       </DeleteDialog>

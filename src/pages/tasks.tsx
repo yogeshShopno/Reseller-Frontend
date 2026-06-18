@@ -52,7 +52,7 @@ export default function TasksPage() {
     const token = getAuthToken();
     if (!token) return;
 
-    axios.get(baseUrl.currentStaff, { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(baseUrl.currentReseller, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => {
         const role = res.data?.data?.role || {};
         const rawPerms = Array.isArray(role.permissions) ? role.permissions[0] : role.permissions || {};

@@ -39,7 +39,7 @@ export default function LeadAddDialog({
   onLeadCreated, onLeadUpdated,
 }: Props) {
   const [statuses, setStatuses] = useState<DropdownItem[]>([]);
-  const [staff, setStaff] = useState<DropdownItem[]>([]);
+  const [reseller, setReseller] = useState<DropdownItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [attachments, setAttachments] = useState<File[]>([]);
   const [quotationOpen, setQuotationOpen] = useState(false);
@@ -175,7 +175,7 @@ export default function LeadAddDialog({
 
         let leadData = null;
         if (mode === 'edit' && initialData?._id) {
-          const [stRes, staffRes, deptRes, leadRes] = await Promise.all([
+          const [stRes, resellerRes, deptRes, leadRes] = await Promise.all([
             axios.get(baseUrl.leadStatuses, { headers }),
             axios.get(baseUrl.getAllUsers, { headers }),
             axios.get(baseUrl.department, { headers }),
@@ -183,27 +183,27 @@ export default function LeadAddDialog({
           ]);
           setStatuses(stRes.data?.data || []);
           const depts = deptRes.data?.data || [];
-          const users = staffRes.data?.data || [];
+          const users = resellerRes.data?.data || [];
           const usersWithDepts = users.map((u: any) => {
             const d = depts.find((dept: any) => dept._id === u.department);
             return { ...u, departmentName: d ? (d.roleName || d.name) : '' };
           });
-          setStaff(usersWithDepts);
+          setReseller(usersWithDepts);
           leadData = leadRes.data?.data;
         } else {
-          const [stRes, staffRes, deptRes] = await Promise.all([
+          const [stRes, resellerRes, deptRes] = await Promise.all([
             axios.get(baseUrl.leadStatuses, { headers }),
             axios.get(baseUrl.getAllUsers, { headers }),
             axios.get(baseUrl.department, { headers })
           ]);
           setStatuses(stRes.data?.data || []);
           const depts = deptRes.data?.data || [];
-          const users = staffRes.data?.data || [];
+          const users = resellerRes.data?.data || [];
           const usersWithDepts = users.map((u: any) => {
             const d = depts.find((dept: any) => dept._id === u.department);
             return { ...u, departmentName: d ? (d.roleName || d.name) : '' };
           });
-          setStaff(usersWithDepts);
+          setReseller(usersWithDepts);
         }
 
         if (mode === 'edit') {
@@ -433,7 +433,7 @@ export default function LeadAddDialog({
                 value={formik.values.assignedTo}
                 onChange={(val) => { formik.setFieldValue('assignedTo', val); }}
                 onBlur={() => formik.setFieldTouched('assignedTo')}
-                options={staff.map((s) => ({ value: s._id, label: `${s.fullName || s.name!}${s.departmentName ? ` (${s.departmentName})` : ''}` }))}
+                options={reseller.map((s) => ({ value: s._id, label: `${s.fullName || s.name!}${s.departmentName ? ` (${s.departmentName})` : ''}` }))}
                 error={getFieldError('assignedTo')}
                 placeholder="Select User"
                 required={requiredFields.includes('assignedTo')}

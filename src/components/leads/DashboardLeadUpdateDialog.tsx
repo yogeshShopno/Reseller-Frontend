@@ -34,7 +34,7 @@ export default function DashboardLeadUpdateDialog({ isOpen, onClose, lead, onSuc
   const [nextTime, setNextTime] = useState('');
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(false);
-  const [staffId, setStaffId] = useState<string>('');
+  const [resellerId, setResellerId] = useState<string>('');
 
   useEffect(() => {
     if (!isOpen) return;
@@ -48,16 +48,16 @@ export default function DashboardLeadUpdateDialog({ isOpen, onClose, lead, onSuc
     const fetchMeta = async () => {
       try {
         const headers = { Authorization: `Bearer ${getAuthToken()}` };
-        const [statusRes, staffRes] = await Promise.all([
+        const [statusRes, resellerRes] = await Promise.all([
           axios.get(baseUrl.leadStatuses, { headers }),
-          axios.get(baseUrl.currentStaff, { headers }).catch(() => null),
+          axios.get(baseUrl.currentReseller, { headers }).catch(() => null),
         ]);
         setStatuses(statusRes.data?.data || []);
-        if (staffRes?.data?.data?._id) {
-          setStaffId(staffRes.data.data._id);
+        if (resellerRes?.data?.data?._id) {
+          setResellerId(resellerRes.data.data._id);
         }
       } catch (error) {
-        console.error('Failed to fetch statuses or staff', error);
+        console.error('Failed to fetch statuses or reseller', error);
       }
     };
     fetchMeta();
@@ -104,7 +104,7 @@ export default function DashboardLeadUpdateDialog({ isOpen, onClose, lead, onSuc
           note: note,
           createdAt: new Date().toISOString(),
         };
-        if (staffId) newFollowup.staff = staffId;
+        if (resellerId) newFollowup.reseller = resellerId;
 
         const existingFollowUps = lead.followUps || [];
         payload.followUps = [...existingFollowUps, newFollowup];

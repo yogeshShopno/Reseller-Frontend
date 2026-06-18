@@ -9,7 +9,7 @@ type Filters = {
   search?: string;
   status?: string;
   source?: string;
-  staff?: string;
+  reseller?: string;
   from?: string;
   to?: string;
 };
@@ -27,7 +27,7 @@ export function useLeadsData(
 
   const [sources, setSources] = useState<ApiSource[]>([]);
   const [statuses, setStatuses] = useState<ApiStatus[]>([]);
-  const [staffMembers, setStaffMembers] = useState<ApiUser[]>([]);
+  const [resellerMembers, setResellerMembers] = useState<ApiUser[]>([]);
   const [leadLabels, setLeadLabels] = useState<LeadLabel[]>([]);
   const [counts, setCounts] = useState<LeadCountSummary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -85,7 +85,7 @@ export function useLeadsData(
             search: f.search || undefined,
             status: f.status || undefined,
             source: f.source || undefined,
-            staff: f.staff || undefined,
+            reseller: f.reseller || undefined,
             from: f.from || undefined,
             to: f.to || undefined,
             limit: LIMIT,
@@ -111,7 +111,7 @@ export function useLeadsData(
             search: f.search || undefined,
             status: f.status || undefined,
             source: f.source || undefined,
-            staff: f.staff || undefined,
+            reseller: f.reseller || undefined,
             from: f.from || undefined,
             to: f.to || undefined,
             limit: 100,
@@ -138,7 +138,7 @@ export function useLeadsData(
           search: f.search || undefined,
           status: f.status || undefined,
           source: f.source || undefined,
-          staff: f.staff || undefined,
+          reseller: f.reseller || undefined,
           from: f.from || undefined,
           to: f.to || undefined,
           page,
@@ -169,7 +169,7 @@ export function useLeadsData(
           search: f.search || undefined,
           status: f.status || undefined,
           source: f.source || undefined,
-          staff: f.staff || undefined,
+          reseller: f.reseller || undefined,
           from: f.from || undefined,
           to: f.to || undefined,
           page,
@@ -201,7 +201,7 @@ export function useLeadsData(
           search: f.search || undefined,
           status: f.status || undefined,
           source: f.source || undefined,
-          staff: f.staff || undefined,
+          reseller: f.reseller || undefined,
           from: f.from || undefined,
           to: f.to || undefined,
           page,
@@ -232,7 +232,7 @@ export function useLeadsData(
           search: f.search || undefined,
           status: f.status || undefined,
           source: f.source || undefined,
-          staff: f.staff || undefined,
+          reseller: f.reseller || undefined,
           from: f.from || undefined,
           to: f.to || undefined,
         },
@@ -245,13 +245,13 @@ export function useLeadsData(
 
   const fetchMeta = useCallback(async () => {
     try {
-      const [stRes, staffRes, meRes] = await Promise.all([
+      const [stRes, resellerRes, meRes] = await Promise.all([
         axios.get(baseUrl.leadStatuses, { headers: getHeaders() }),
-        axios.get(baseUrl.getAllStaff, { headers: getHeaders() }),
-        axios.get(baseUrl.currentStaff, { headers: getHeaders() })
+        axios.get(baseUrl.getAllReseller, { headers: getHeaders() }),
+        axios.get(baseUrl.currentReseller, { headers: getHeaders() })
       ]);
       setStatuses(stRes.data?.data ?? []);
-      setStaffMembers(staffRes.data?.data ?? []);
+      setResellerMembers(resellerRes.data?.data ?? []);
       const role = meRes.data?.data?.role || {};
       const rawPerms = Array.isArray(role.permissions) ? role.permissions[0] : role.permissions || {};
       const lp = rawPerms.lead || {};
@@ -386,7 +386,7 @@ export function useLeadsData(
     leads, setLeads,
     leadsList, setLeadsList,
     lostLeads, wonLeads,
-    sources, statuses, staffMembers, leadLabels,
+    sources, statuses, resellerMembers, leadLabels,
     counts, loading, permissions,
     refetchAll,
     fetchLeadsList,

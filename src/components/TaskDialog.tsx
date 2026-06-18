@@ -22,7 +22,7 @@ export interface Attachment {
   size?: number;
 }
 
-interface StaffOption {
+interface ResellerOption {
   _id: string;
   fullName: string;
   email?: string;
@@ -94,7 +94,7 @@ const getFileUrl = (path: string) => {
 };
 
 export default function TaskDialog({ isOpen, onClose, mode, initialData, onSuccess, taskStatuses = [] }: TaskDialogProps) {
-  const [staffList, setStaffList] = useState<StaffOption[]>([]);
+  const [resellerList, setResellerList] = useState<ResellerOption[]>([]);
   const [teamList, setTeamList] = useState<TeamOption[]>([]);
   const [localTaskStatuses, setLocalTaskStatuses] = useState<{ _id: string; name: string; color: string }[]>([]);
   const [attachments, setAttachments] = useState<File[]>([]);
@@ -229,7 +229,7 @@ export default function TaskDialog({ isOpen, onClose, mode, initialData, onSucce
   };
 
   const toggleTeam = (teamId: string) => {
-    const teamMembers = staffList
+    const teamMembers = resellerList
       .filter((s) => Array.isArray(s.teams) && s.teams.some((t: any) => (t._id || t) === teamId))
       .map((s) => s._id);
 
@@ -241,7 +241,7 @@ export default function TaskDialog({ isOpen, onClose, mode, initialData, onSucce
     let updatedUsers = [...formik.values.assignedUsers];
     if (isSelected) {
       const otherTeamMemberIds = new Set(
-        staffList
+        resellerList
           .filter((s) => Array.isArray(s.teams) && s.teams.some((t: any) => updatedTeams.includes(t._id || t)))
           .map((s) => s._id)
       );
@@ -324,7 +324,7 @@ export default function TaskDialog({ isOpen, onClose, mode, initialData, onSucce
     }
   };
 
-  // Fetch staff & teams when dialog opens
+  // Fetch reseller & teams when dialog opens
   useEffect(() => {
     if (!isOpen) return;
     setLoadingOptions(true);
@@ -335,8 +335,8 @@ export default function TaskDialog({ isOpen, onClose, mode, initialData, onSucce
       axios.get(baseUrl.teams, { headers }),
       axios.get(baseUrl.taskStatuses, { headers }),
     ])
-      .then(([staffRes, teamRes, statusRes]) => {
-        setStaffList(staffRes.data?.data || []);
+      .then(([resellerRes, teamRes, statusRes]) => {
+        setResellerList(resellerRes.data?.data || []);
         setTeamList(teamRes.data?.data || []);
         setLocalTaskStatuses(statusRes.data?.data || []);
       })
@@ -488,7 +488,7 @@ export default function TaskDialog({ isOpen, onClose, mode, initialData, onSucce
                     <p className="text-xs text-gray-400 px-2">No teams available</p>
                   ) : (
                     teamList.map((t) => {
-                      const memberCount = staffList.filter(
+                      const memberCount = resellerList.filter(
                         (s) => Array.isArray(s.teams) && s.teams.some((tm: any) => (tm._id || tm) === t._id)
                       ).length;
                       return (
@@ -527,10 +527,10 @@ export default function TaskDialog({ isOpen, onClose, mode, initialData, onSucce
               <div className="text-sm text-gray-400">Loading...</div>
             ) : (
               <div className="max-h-32 overflow-y-auto rounded-xl border border-gray-300 p-2 space-y-1">
-                {staffList.length === 0 ? (
-                  <p className="text-xs text-gray-400 px-2">No staff available</p>
+                {resellerList.length === 0 ? (
+                  <p className="text-xs text-gray-400 px-2">No reseller available</p>
                 ) : (
-                  staffList.map((s) => {
+                  resellerList.map((s) => {
                     const isViaTeam =
                       Array.isArray(s.teams) &&
                       s.teams.some((t: any) => formik.values.assignedTeams.includes(t._id || t));

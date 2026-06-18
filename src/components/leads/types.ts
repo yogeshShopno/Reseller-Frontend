@@ -29,7 +29,7 @@ export type ApiFollowUp = {
   date: string;
   time: string;
   note: string;
-  staff: ApiUser;
+  reseller: ApiUser;
   createdAt?: string;
 };
 

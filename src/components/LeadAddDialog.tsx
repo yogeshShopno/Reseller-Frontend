@@ -30,7 +30,7 @@ interface Lead {
   email: string;
   source: string;     // _id when editing
   status: string;     // _id when editing
-  staff: string;      // _id when editing
+  reseller: string;      // _id when editing
   priority: 'high' | 'medium' | 'low' | 'High' | 'Medium' | 'Low';
   nextFollowupDate?: string;
   nextFollowupTime?: string;
@@ -61,7 +61,7 @@ export default function LeadAddDialog({
 }: LeadAddDialogProps) {
   const [leadSources, setLeadSources] = useState<DropdownItem[]>([]);
   const [leadStatuses, setLeadStatuses] = useState<DropdownItem[]>([]);
-  const [staffList, setStaffList] = useState<DropdownItem[]>([]);
+  const [resellerList, setResellerList] = useState<DropdownItem[]>([]);
   const [leadLabels, setLeadLabels] = useState<LeadLabel[]>([]); // Added state for labels
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -97,7 +97,7 @@ export default function LeadAddDialog({
         setLoading(true);
         setFormError(null);
 
-        const [sourcesRes, statusRes, staffRes, labelsRes, deptRes] = await Promise.all([
+        const [sourcesRes, statusRes, resellerRes, labelsRes, deptRes] = await Promise.all([
           axios.get(baseUrl.leadSources, { headers: { Authorization: `Bearer ${token}` } }),
           axios.get(baseUrl.leadStatuses, { headers: { Authorization: `Bearer ${token}` } }),
           axios.get(baseUrl.getAllUsers, { headers: { Authorization: `Bearer ${token}` } }),
@@ -106,7 +106,7 @@ export default function LeadAddDialog({
         ]);
 
         const depts = deptRes.data?.data || [];
-        const users = staffRes.data?.data || [];
+        const users = resellerRes.data?.data || [];
         const usersWithDepts = users.map((u: any) => {
           const d = depts.find((dept: any) => dept._id === u.department);
           return { ...u, departmentName: d ? (d.roleName || d.name) : '' };
@@ -114,7 +114,7 @@ export default function LeadAddDialog({
 
         setLeadSources(sourcesRes.data?.data || []);
         setLeadStatuses(statusRes.data?.data || []);
-        setStaffList(usersWithDepts);
+        setResellerList(usersWithDepts);
         setLeadLabels(labelsRes.data?.data || []);
       } catch (err) {
         console.error(err);
@@ -144,7 +144,7 @@ export default function LeadAddDialog({
         email: initialData.email || '',
         leadSource: initialData.source || '',
         leadStatus: initialData.status || '',
-        assignedTo: initialData.staff || '',
+        assignedTo: initialData.reseller || '',
         labels: labelIds,
         priority: (initialData.priority || 'medium').toLowerCase() as 'high' | 'medium' | 'low',
         nextFollowupDate: initialData.nextFollowupDate || '',
@@ -206,7 +206,7 @@ export default function LeadAddDialog({
     if (!formData.email.trim()) return setFormError('Email is required');
     if (!formData.leadSource) return setFormError('Please select Source');
     if (!formData.leadStatus) return setFormError('Please select Status');
-    if (!formData.assignedTo) return setFormError('Please assign Staff');
+    if (!formData.assignedTo) return setFormError('Please assign Reseller');
     if (!token) return setFormError('No authentication token found');
 
     try {
@@ -441,7 +441,7 @@ export default function LeadAddDialog({
                 className="w-full border border-slate-400 rounded px-3 py-2 text-black"
               >
                 <option value="">— Select —</option>
-                {staffList.map((item) => (
+                {resellerList.map((item) => (
                   <option key={item._id} value={item._id}>
                     {item.fullName || item.name || 'Unnamed'}{item.departmentName ? ` (${item.departmentName})` : ''}
                   </option>

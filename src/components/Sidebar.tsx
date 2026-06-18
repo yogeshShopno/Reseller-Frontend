@@ -46,7 +46,7 @@ export default function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [canViewLead, setCanViewLead] = useState(false);
   const [canViewTask, setCanViewTask] = useState(false);
-  const [canViewStaff, setCanViewStaff] = useState(false);
+  const [canViewReseller, setCanViewReseller] = useState(false);
   const [canViewRole, setCanViewRole] = useState(false);
   const [canViewLeadStatus, setCanViewLeadStatus] = useState(false);
   const [canViewLeadSource, setCanViewLeadSource] = useState(false);
@@ -60,7 +60,7 @@ export default function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
     const token = getAuthToken();
     if (!token) return;
     axios
-      .get(baseUrl.currentStaff, {
+      .get(baseUrl.currentReseller, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
@@ -70,7 +70,7 @@ export default function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
           : role.permissions || {};
         const leadPerms = rawPerms.lead || {};
         const taskPerms = rawPerms.task || {};
-        const staffPerms = rawPerms.staff || {};
+        const resellerPerms = rawPerms.reseller || {};
         const rolePerms = rawPerms.role || {};
         const leadStatusPerms = rawPerms.leadStatus || {};
         const leadSourcePerms = rawPerms.leadSource || {};
@@ -81,7 +81,7 @@ export default function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
         setIsAdmin(admin);
         setCanViewLead(!!(admin || leadPerms.readOwn || leadPerms.readAll));
         setCanViewTask(!!(taskPerms.readOwn || taskPerms.readAll));
-        setCanViewStaff(!!(admin || staffPerms.readAll || setupPerms.readAll));
+        setCanViewReseller(!!(admin || resellerPerms.readAll || setupPerms.readAll));
         setCanViewRole(!!(rolePerms.readAll || setupPerms.readAll));
         setCanViewLeadStatus(!!(leadStatusPerms.readAll || setupPerms.readAll));
         setCanViewLeadSource(!!(leadSourcePerms.readAll || setupPerms.readAll));
@@ -95,7 +95,7 @@ export default function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
         setIsAdmin(false);
         setCanViewLead(false);
         setCanViewTask(false);
-        setCanViewStaff(false);
+        setCanViewReseller(false);
         setCanViewRole(false);
         setCanViewLeadStatus(false);
         setCanViewLeadSource(false);
@@ -114,7 +114,7 @@ export default function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
     menuItems.push({ icon: UserPlus, label: "Leads", path: "/leads" });
   }
 
-  if (canViewStaff) menuItems.push({ icon: Users, label: "User", path: "/user-list" });
+  if (canViewReseller) menuItems.push({ icon: Users, label: "Reseller", path: "/reseller" });
   if (canViewRole) menuItems.push({ icon: Building2, label: "Department Management", path: "/roles" });
   if (canViewLeadStatus) menuItems.push({ icon: Flag, label: "Lead Status", path: "/lead-status" });
   if (canViewCategory) menuItems.push({ icon: List, label: "Category", path: "/category" });

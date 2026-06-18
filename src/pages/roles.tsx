@@ -51,7 +51,7 @@ const normalizeCaps = (caps?: CapabilityPartial) => ({
 
 // FIXED: Added all 9 features here
 const normalizeRole = (r: BackendRole): Role => {
-  const features = ['lead', 'task', 'taskStatus', 'staff', 'role', 'leadStatus', 'leadSource', 'leadLabel', 'teams', 'organizations'];
+  const features = ['lead', 'task', 'taskStatus', 'reseller', 'role', 'leadStatus', 'leadSource', 'leadLabel', 'teams', 'organizations'];
   const rawPerms = r?.permissions;
   const srcPerms = Array.isArray(rawPerms) ? rawPerms[0] : rawPerms || {};
 
@@ -86,7 +86,7 @@ const toBackendRole = (r: Role): BackendRole => {
   const lead = serializeCaps(r.permissions?.lead);
   const task = serializeCaps(r.permissions?.task);
   const taskStatus = serializeCaps(r.permissions?.taskStatus);
-  const staff = serializeCaps(r.permissions?.staff);
+  const reseller = serializeCaps(r.permissions?.reseller);
   const role = serializeCaps(r.permissions?.role);
   const leadStatus = serializeCaps(r.permissions?.leadStatus);
   const leadSource = serializeCaps(r.permissions?.leadSource);
@@ -100,7 +100,7 @@ const toBackendRole = (r: Role): BackendRole => {
       lead, 
       task, 
       taskStatus,
-      staff, 
+      reseller, 
       role, 
       leadStatus, 
       leadSource, 
@@ -157,7 +157,7 @@ export function RolesContent() {
   useEffect(() => {
     if (!token) return;
     axios
-      .get(baseUrl.currentStaff, {
+      .get(baseUrl.currentReseller, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {

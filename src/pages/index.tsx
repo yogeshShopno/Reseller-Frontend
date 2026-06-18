@@ -81,7 +81,7 @@
     const [leadsBySource, setLeadsBySource] = useState<
       { name: string; value: number; fill: string }[]
     >([]);
-    const [staffPerformance, setStaffPerformance] = useState<
+    const [resellerPerformance, setResellerPerformance] = useState<
       { name: string; converted: number; pending: number; lost: number }[]
     >([]);
 
@@ -116,11 +116,11 @@
     // Fetch user info and permissions
     useEffect(() => {
       if (!token) return;
-      axios.get(baseUrl.currentStaff, { headers: { Authorization: `Bearer ${token}` } })
+      axios.get(baseUrl.currentReseller, { headers: { Authorization: `Bearer ${token}` } })
         .then(res => {
-          const staff = res.data?.data || {};
-          setUser(staff);
-          const role = staff.role || {};
+          const reseller = res.data?.data || {};
+          setUser(reseller);
+          const role = reseller.role || {};
           const rawPerms = Array.isArray(role.permissions) ? role.permissions[0] : role.permissions || {};
           const lp = rawPerms.lead || {};
           setPermissions({
@@ -219,21 +219,21 @@
       }
     };
 
-    const fetchStaffPerformance = async () => {
+    const fetchResellerPerformance = async () => {
       if (!token) return;
       try {
         const res = await axios.get(baseUrl.getAllUsers, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const chartData = (res.data.data ?? []).map((staff: any) => ({
-          name: staff.fullName || "Unknown",
-          converted: staff.status?.toLowerCase() === "active" ? 1 : 0,
-          pending: staff.status?.toLowerCase() === "inactive" ? 1 : 0,
+        const chartData = (res.data.data ?? []).map((reseller: any) => ({
+          name: reseller.fullName || "Unknown",
+          converted: reseller.status?.toLowerCase() === "active" ? 1 : 0,
+          pending: reseller.status?.toLowerCase() === "inactive" ? 1 : 0,
           lost: 0,
         }));
-        setStaffPerformance(chartData);
+        setResellerPerformance(chartData);
       } catch (err) {
-        console.error("Staff performance error:", err);
+        console.error("Reseller performance error:", err);
       }
     };
 
@@ -308,10 +308,10 @@
         fetchDueFollowups(1);
         fetchTodayTasks();
 
-        // Only fetch staff stats if they have readAll
+        // Only fetch reseller stats if they have readAll
         if (permissions.readAll) {
           fetchLeadsBySource();
-          fetchStaffPerformance();
+          fetchResellerPerformance();
         }
       }
     }, [token, permissions, fromDate, toDate]);

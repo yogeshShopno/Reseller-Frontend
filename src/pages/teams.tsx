@@ -73,7 +73,7 @@ export function TeamsContent() {
   useEffect(() => {
     if (!token) return;
     axios
-      .get(baseUrl.currentStaff, {
+      .get(baseUrl.currentReseller, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
@@ -186,7 +186,7 @@ export function TeamsContent() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Teams</h1>
         <p className="text-gray-600">
-          Manage teams and their members. Teams help organize staff members into groups.
+          Manage teams and their members. Teams help organize reseller members into groups.
         </p>
       </div>
 

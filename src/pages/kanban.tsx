@@ -79,7 +79,7 @@ type AddLeadForm = {
   source: string;
   label: string[]; // Added label field
   status: string;
-  staff: string;
+  reseller: string;
   priority: "High" | "Medium" | "Low";
   lastFollowUp: string;
   nextFollowupDate?: string;
@@ -94,7 +94,7 @@ export default function LeadsPage() {
   const [leads, setLeads] = useState<ApiLead[]>([]);
   const [sources, setSources] = useState<ApiSource[]>([]);
   const [statuses, setStatuses] = useState<ApiStatus[]>([]);
-  const [staffMembers, setStaffMembers] = useState<ApiUser[]>([]);
+  const [resellerMembers, setResellerMembers] = useState<ApiUser[]>([]);
   const [leadLabels, setLeadLabels] = useState<LeadLabel[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"list" | "board" | "lost" | "won">("board");
@@ -124,7 +124,7 @@ export default function LeadsPage() {
     source: "",
     label: [],
     status: "",
-    staff: "",
+    reseller: "",
     priority: "Medium",
     lastFollowUp: new Date().toISOString().split("T")[0],
     nextFollowupDate: "",
@@ -301,16 +301,16 @@ export default function LeadsPage() {
     }
   };
 
-  const fetchStaff = async () => {
+  const fetchReseller = async () => {
     try {
       const token = getAuthToken();
       const res = await axios.get(baseUrl.getAllUsers, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = res.data?.data ?? res.data;
-      setStaffMembers(Array.isArray(data) ? data : []);
+      setResellerMembers(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Failed to fetch staff", error);
+      console.error("Failed to fetch reseller", error);
     }
   };
 
@@ -318,7 +318,7 @@ export default function LeadsPage() {
     fetchLeads();
     fetchSources();
     fetchStatuses();
-    fetchStaff();
+    fetchReseller();
     fetchLostLeads();
     fetchWonLeads();
     fetchLeadLabels();
@@ -334,7 +334,7 @@ export default function LeadsPage() {
     if (requiredFields.includes('email') && !addForm.email) missingFields.push('Email');
     if (requiredFields.includes('leadSource') && !addForm.source) missingFields.push('Source');
     if (requiredFields.includes('leadStatus') && !addForm.status && !editingLead) missingFields.push('Status');
-    if (requiredFields.includes('assignedTo') && !addForm.staff) missingFields.push('Assigned Staff');
+    if (requiredFields.includes('assignedTo') && !addForm.reseller) missingFields.push('Assigned Reseller');
     if (requiredFields.includes('priority') && !addForm.priority) missingFields.push('Priority');
     if (requiredFields.includes('labels') && (!addForm.label || addForm.label.length === 0)) missingFields.push('Lead Labels');
 
@@ -354,7 +354,7 @@ export default function LeadsPage() {
         email: addForm.email.trim().toLowerCase(),
         leadSource: addForm.source,
         leadStatus: addForm.status,
-        assignedTo: addForm.staff,
+        assignedTo: addForm.reseller,
         priority: addForm.priority.toLowerCase(),
         lastFollowUp: addForm.lastFollowUp,
         nextFollowupDate: addForm.nextFollowupDate || null,
@@ -405,7 +405,7 @@ export default function LeadsPage() {
       source: "",
       label: [],
       status: "",
-      staff: "",
+      reseller: "",
       priority: "Medium",
       lastFollowUp: new Date().toISOString().split("T")[0],
       nextFollowupDate: "",
@@ -442,7 +442,7 @@ export default function LeadsPage() {
       source: lead.leadSource?._id || "",
       label: labelIds,
       status: lead.leadStatus?._id || "",
-      staff: lead.assignedTo?._id || "",
+      reseller: lead.assignedTo?._id || "",
       priority: lead.priority || "Medium",
       lastFollowUp: lead.lastFollowUp || new Date().toISOString().split("T")[0],
       nextFollowupDate: lead.nextFollowupDate || "",
@@ -1250,17 +1250,17 @@ export default function LeadsPage() {
               )}
               <div>
                 <label className="block text-sm font-medium text-slate-700">
-                  Assigned Staff {requiredFields.includes('assignedTo') && <span className="text-red-500">*</span>}
+                  Assigned Reseller {requiredFields.includes('assignedTo') && <span className="text-red-500">*</span>}
                 </label>
                 <select
-                  value={addForm.staff}
+                  value={addForm.reseller}
                   onChange={(e) =>
-                    setAddForm((p) => ({ ...p, staff: e.target.value }))
+                    setAddForm((p) => ({ ...p, reseller: e.target.value }))
                   }
                   className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">Select Staff</option>
-                  {staffMembers.map((s) => (
+                  <option value="">Select Reseller</option>
+                  {resellerMembers.map((s) => (
                     <option key={s._id} value={s._id}>
                       {s.fullName}
                     </option>
@@ -1480,7 +1480,7 @@ export default function LeadsPage() {
                   </div>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="text-sm text-gray-600">Assigned Staff</div>
+                  <div className="text-sm text-gray-600">Assigned Reseller</div>
                   <div>{viewLead.assignedTo?.fullName || "-"}</div>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">

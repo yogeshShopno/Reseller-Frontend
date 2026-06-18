@@ -66,7 +66,7 @@
 //         date: editNextDate,
 //         time: editNextTime,
 //         note: followupNote,
-//         // Backend handles staff ID if not provided, but we send if we had it.
+//         // Backend handles reseller ID if not provided, but we send if we had it.
 //         // For now, let's just send the data.
 //       };
 
@@ -170,7 +170,7 @@
 //               <InfoCard label="Phone" value={lead.contact} />
 //               <InfoCard label="Email" value={lead.email} />
 //               <InfoCard label="Source" value={lead.leadSource?.name} />
-//               <InfoCard label="Assigned Staff" value={lead.assignedTo?.fullName} />
+//               <InfoCard label="Assigned Reseller" value={lead.assignedTo?.fullName} />
 //               <InfoCard
 //                 label="Priority"
 //                 value={
@@ -270,7 +270,7 @@
 //                       <tr className="bg-gray-50 border-b border-gray-100">
 //                         <th className="px-4 py-3 font-semibold text-gray-600">Date & Time</th>
 //                         <th className="px-4 py-3 font-semibold text-gray-600">Note</th>
-//                         <th className="px-4 py-3 font-semibold text-gray-600">Staff</th>
+//                         <th className="px-4 py-3 font-semibold text-gray-600">Reseller</th>
 //                       </tr>
 //                     </thead>
 //                     <tbody className="divide-y divide-gray-50">
@@ -286,9 +286,9 @@
 //                           <td className="px-4 py-3 whitespace-nowrap">
 //                             <div className="flex items-center gap-2">
 //                               <div className="h-6 w-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] font-bold">
-//                                 {f.staff?.fullName?.charAt(0) || 'U'}
+//                                 {f.reseller?.fullName?.charAt(0) || 'U'}
 //                               </div>
-//                               <span className="text-gray-600">{f.staff?.fullName || 'System'}</span>
+//                               <span className="text-gray-600">{f.reseller?.fullName || 'System'}</span>
 //                             </div>
 //                           </td>
 //                         </tr>
@@ -493,7 +493,7 @@ interface FollowUp {
   date: string;
   time?: string;
   note: string;
-  staff?: {
+  reseller?: {
     _id: string;
     fullName: string;
   };
@@ -511,7 +511,7 @@ export default function LeadViewDialog({ lead, statuses, onClose, onRefresh }: P
   const [localFollowUps, setLocalFollowUps] = useState<FollowUp[]>([]);
   const [localAttachments, setLocalAttachments] = useState<any[]>([]);
   const [localActivities, setLocalActivities] = useState<any[]>([]);
-  const [staffInfo, setStaffInfo] = useState<any>(null);
+  const [resellerInfo, setResellerInfo] = useState<any>(null);
   const [followUpSearch, setFollowUpSearch] = useState('');
   const [quotationOpen, setQuotationOpen] = useState(false);
   const [reassignOpen, setReassignOpen] = useState(false);
@@ -540,20 +540,20 @@ export default function LeadViewDialog({ lead, statuses, onClose, onRefresh }: P
       (f.note?.toLowerCase() || '').includes(search) ||
       (f.date?.toLowerCase() || '').includes(search) ||
       (f.time?.toLowerCase() || '').includes(search) ||
-      (f.staff?.fullName?.toLowerCase() || '').includes(search)
+      (f.reseller?.fullName?.toLowerCase() || '').includes(search)
     );
   }, [localFollowUps, followUpSearch]);
 
-  // Get current staff info and departments
+  // Get current reseller info and departments
   useEffect(() => {
     const fetchMeta = async () => {
       try {
         const headers = { Authorization: `Bearer ${getAuthToken()}` };
-        const [staffRes, deptRes] = await Promise.all([
-          axios.get(baseUrl.currentStaff, { headers }),
+        const [resellerRes, deptRes] = await Promise.all([
+          axios.get(baseUrl.currentReseller, { headers }),
           axios.get(baseUrl.department, { headers }).catch(() => ({ data: { data: [] } }))
         ]);
-        setStaffInfo(staffRes.data?.data);
+        setResellerInfo(resellerRes.data?.data);
         setDepartments(deptRes.data?.data || []);
       } catch (error) {
         console.error('Failed to fetch meta info', error);
@@ -638,9 +638,9 @@ export default function LeadViewDialog({ lead, statuses, onClose, onRefresh }: P
       date: editNextDate,
       time: editNextTime,
       note: followupNote,
-      staff: staffInfo ? {
-        _id: staffInfo._id,
-        fullName: staffInfo.fullName || 'Current User'
+      reseller: resellerInfo ? {
+        _id: resellerInfo._id,
+        fullName: resellerInfo.fullName || 'Current User'
       } : undefined,
       _id: `temp_${Date.now()}`, // Temporary ID
       createdAt: new Date().toISOString()
@@ -991,7 +991,7 @@ export default function LeadViewDialog({ lead, statuses, onClose, onRefresh }: P
                         <tr className="bg-gray-100 border-b border-gray-200">
                           <th className="px-4 py-3 font-semibold text-gray-600">Date & Time</th>
                           <th className="px-4 py-3 font-semibold text-gray-600">Note</th>
-                          <th className="px-4 py-3 font-semibold text-gray-600">Staff</th>
+                          <th className="px-4 py-3 font-semibold text-gray-600">Reseller</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-50">
@@ -1020,9 +1020,9 @@ export default function LeadViewDialog({ lead, statuses, onClose, onRefresh }: P
                             <td className="px-4 py-3 whitespace-nowrap">
                               <div className="flex items-center gap-2">
                                 <div className="h-6 w-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] font-bold">
-                                  {f.staff?.fullName?.charAt(0) || staffInfo?.fullName?.charAt(0) || 'U'}
+                                  {f.reseller?.fullName?.charAt(0) || resellerInfo?.fullName?.charAt(0) || 'U'}
                                 </div>
-                                <span className="text-gray-600">{f.staff?.fullName || staffInfo?.fullName || 'Current User'}</span>
+                                <span className="text-gray-600">{f.reseller?.fullName || resellerInfo?.fullName || 'Current User'}</span>
                               </div>
                             </td>
                           </tr>
@@ -1295,7 +1295,7 @@ export default function LeadViewDialog({ lead, statuses, onClose, onRefresh }: P
       >
         <div className="p-2 space-y-2">
           <FormSelect
-            label="Select Staff"
+            label="Select Reseller"
             name="selectedReassignUser"
             value={selectedReassignUser}
             onChange={(val) => setSelectedReassignUser(val)}

@@ -28,14 +28,14 @@ export default function RoleForm({
   initialData,
 }: RoleFormProps) {
   // FIXED: Use lowercase for feature keys to match backend expectations
-  type Feature = 'lead' | 'task' | 'taskStatus' | 'staff' | 'role' | 'leadStatus' | 'leadSource' | 'leadLabel' | 'teams' | 'organizations';
-  const features: Feature[] = ['lead', 'task', 'taskStatus', 'staff', 'role', 'leadStatus', 'leadSource', 'leadLabel', 'teams', 'organizations'];
+  type Feature = 'lead' | 'task' | 'taskStatus' | 'reseller' | 'role' | 'leadStatus' | 'leadSource' | 'leadLabel' | 'teams' | 'organizations';
+  const features: Feature[] = ['lead', 'task', 'taskStatus', 'reseller', 'role', 'leadStatus', 'leadSource', 'leadLabel', 'teams', 'organizations'];
 
   const featureLabels: Record<Feature, string> = {
     lead: 'Leads',
     task: 'Tasks',
     taskStatus: 'Task Statuses',
-    staff: 'User',
+    reseller: 'User',
     role: 'Department Management',
     leadStatus: 'Lead Statuses',
     leadSource: 'Lead Sources',
@@ -196,7 +196,7 @@ export default function RoleForm({
             onBlur={formik.handleBlur}
             error={formik.touched.roleName && formik.errors.roleName ? formik.errors.roleName : undefined}
             required
-            placeholder="Enter department name (e.g., Admin, Manager, Staff)"
+            placeholder="Enter department name (e.g., Admin, Manager, Reseller)"
             // helperText="Role name must be unique and descriptive"
           />
         </div>

@@ -47,7 +47,7 @@ interface Props {
         search?: string;
         status?: string;
         source?: string;
-        staff?: string;
+        reseller?: string;
         date?: string;
     };
     lostPagination?: PaginationShape;
@@ -123,7 +123,7 @@ export default function LeadsKanbanView({
                         my: scope === 'my' || undefined,
                         search: filters.search || undefined,
                         source: filters.source || undefined,
-                        staff: filters.staff || undefined,
+                        reseller: filters.reseller || undefined,
                         date: filters.date || undefined,
                     },
                 });

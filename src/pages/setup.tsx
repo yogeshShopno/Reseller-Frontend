@@ -6,7 +6,7 @@ import axios from 'axios';
 import { baseUrl, getAuthToken } from '@/config';
 import { toast } from 'react-toastify';
 import { RolesContent } from './roles';
-import { UserContent } from './user-list';
+import { UserContent } from './reseller';
 import { LeadSourcesContent } from './lead-sources';
 import { LeadStatusContent } from './lead-status';
 import { Settings, Users, Link2, Flag, Tag, Building2, UsersRound, Settings2, List, Package, PackagePlus, PackageMinus } from 'lucide-react';
@@ -61,7 +61,7 @@ export default function Setup() {
       }
 
       try {
-        const res = await axios.get(baseUrl.currentStaff, {
+        const res = await axios.get(baseUrl.currentReseller, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -190,7 +190,7 @@ export default function Setup() {
 
   // FIXED: Always define all useMemo hooks, regardless of loading state
   const canViewRole = useMemo(() => !!(permissions?.role?.readAll || permissions?.setup?.readAll), [permissions]);
-  const canViewStaff = useMemo(() => !!(permissions?.staff?.readAll || permissions?.setup?.readAll), [permissions]);
+  const canViewReseller = useMemo(() => !!(permissions?.reseller?.readAll || permissions?.setup?.readAll), [permissions]);
   const canViewLeadSource = useMemo(() => !!(permissions?.leadSource?.readAll || permissions?.setup?.readAll), [permissions]);
   const canViewLeadStatus = useMemo(() => !!(permissions?.leadStatus?.readAll || permissions?.setup?.readAll), [permissions]);
   const canViewLeadLabel = useMemo(() => !!(permissions?.leadLabel?.readAll || permissions?.setup?.readAll), [permissions]);
@@ -204,7 +204,7 @@ export default function Setup() {
   const menuItems = useMemo(() => {
     const items = [
       // { name: "Department Management", icon: Settings, visible: canViewRole },
-      // { name: "User", icon: Users, visible: canViewStaff },
+      // { name: "User", icon: Users, visible: canViewReseller },
       // { name: "Lead Sources", icon: Link2, visible: canViewLeadSource },
       // { name: "Lead Status", icon: Flag, visible: canViewLeadStatus },
       { name: "Kanban Status", icon: Settings2, visible: true },
@@ -219,7 +219,7 @@ export default function Setup() {
       // { name: "Stock Out", icon: PackageMinus, visible: canViewStock },
     ];
     return items.filter(i => i.visible);
-  }, [canViewRole, canViewStaff, canViewLeadSource, canViewLeadStatus, canViewLeadLabel, canViewTeams, canViewOrgs, canViewTaskStatus, canViewCategory, canViewProduct, canViewStock]);
+  }, [canViewRole, canViewReseller, canViewLeadSource, canViewLeadStatus, canViewLeadLabel, canViewTeams, canViewOrgs, canViewTaskStatus, canViewCategory, canViewProduct, canViewStock]);
 
   // Handle access restriction - FIXED: Check if current tab is valid
   useEffect(() => {

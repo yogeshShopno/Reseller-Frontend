@@ -138,7 +138,7 @@ export default function Header({ toggleSidebar }: HeaderProps) {
     let socket: any;
 
     axios
-      .get(baseUrl.currentStaff, {
+      .get(baseUrl.currentReseller, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {

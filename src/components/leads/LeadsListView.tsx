@@ -31,7 +31,7 @@ type TableLead = {
   address?: string;
   locationLink?: string;
   status: string;
-  staff: string;
+  reseller: string;
   lastFollowUp: string;
   isActive?: boolean;
   _raw?: any;
@@ -40,7 +40,7 @@ type TableLead = {
 interface Props {
   statuses: ApiStatus[];
   sources: ApiSource[];
-  staffMembers: ApiUser[];
+  resellerMembers: ApiUser[];
   onEdit?: (lead: ApiLead) => void;
   onView?: (lead: ApiLead) => void;
   onRefresh: () => void;
@@ -59,7 +59,7 @@ interface Props {
     search?: string;
     status?: string;
     source?: string;
-    staff?: string;
+    reseller?: string;
     date?: string;
   };
   externalLeads?: ApiLead[];
@@ -86,7 +86,7 @@ function mapLead(item: any): TableLead {
     address: item.address,
     locationLink: item.locationLink,
     status: item.leadStatus?.name || item.status?.name || '-',
-    staff: item.assignedTo?.fullName || '-',
+    reseller: item.assignedTo?.fullName || '-',
     lastFollowUp: item.updatedAt
       ? new Date(item.updatedAt).toLocaleDateString()
       : '-',
@@ -98,7 +98,7 @@ function mapLead(item: any): TableLead {
 export default function LeadsListView({
   statuses,
   sources,
-  staffMembers,
+  resellerMembers,
   onEdit,
   onView,
   onRefresh,
@@ -201,7 +201,7 @@ export default function LeadsListView({
     { key: 'kwRequirement', label: 'KW REQ' },
     { key: 'discomName', label: 'DISCOM' },
     { key: 'status', label: 'STATUS' },
-    { key: 'staff', label: 'ASSIGNED STAFF' },
+    { key: 'reseller', label: 'ASSIGNED RESELLER' },
     { key: 'lastFollowUp', label: 'LAST FOLLOW-UP' },
     { 
       key: 'paymentAmount', 
