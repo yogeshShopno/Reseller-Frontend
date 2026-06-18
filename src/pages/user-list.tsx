@@ -2,26 +2,22 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import DataTable, { Column } from '@/components/DataTable';
-import ResellerForm from '@/components/StaffManagement';
+import StaffForm from '@/components/StaffManagement';
 import axios from 'axios';
 import { baseUrl, getAuthToken } from '@/config';
 import { toast } from 'react-toastify';
 import DeleteDialog from '@/components/DeleteDialog';
 
-interface Reseller {
+interface Staff {
   id: string;
   image?: string;
   fullName: string;
   phone: string;
   email: string;
   status: string;
-  commissionRate?: string;
-  city?: string;
-  state?: string;
-  address?: string;
-  pincode?: string;
-  Notes?: string;
-  password?: string;
+  role?: any;
+  teams?: any[];
+  organizations?: any[];
 }
 
 function useDebounce<T>(value: T, delay: number = 500): T {
@@ -34,12 +30,12 @@ function useDebounce<T>(value: T, delay: number = 500): T {
 }
 
 export function UserContent() {
-  const [resellers, setResellers] = useState<Reseller[]>([]);
+  const [staffs, setStaffs] = useState<Staff[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingReseller, setEditingReseller] = useState<Reseller | null>(null);
+  const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [resellerToDelete, setResellerToDelete] = useState<Reseller | null>(null);
+  const [staffToDelete, setStaffToDelete] = useState<Staff | null>(null);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState('');
@@ -73,7 +69,7 @@ export function UserContent() {
       .catch(() => setSetupPermissions(null));
   }, [token]);
 
-  const fetchResellers = useCallback(async () => {
+  const fetchStaffs = useCallback(async () => {
     setIsLoading(true);
     try {
       const res = await axios.get(baseUrl.getAllUsers, {
@@ -84,22 +80,19 @@ export function UserContent() {
       const payload = (res.data?.data as any[]) || [];
       const pagination = res.data?.pagination || {};
 
-      const formatted: Reseller[] = payload.map((item: any) => ({
+      const formatted: Staff[] = payload.map((item: any) => ({
         id: item._id,
         image: item.profileImage || '',
         fullName: item.fullName || '',
         phone: item.phone || '',
         email: item.email || '',
         status: item.status || 'active',
-        commissionRate: item.commissionRate || '',
-        city: item.city || '',
-        state: item.state || '',
-        address: item.address || '',
-        pincode: item.pincode || '',
-        Notes: item.Notes || '',
+        role: item.role,
+        teams: item.teams || [],
+        organizations: item.organizations || [],
       }));
 
-      setResellers(formatted);
+      setStaffs(formatted);
       setTotalPages(pagination.totalPages || 1);
       setTotalRecords(pagination.totalRecords || 0);
 
@@ -107,8 +100,8 @@ export function UserContent() {
         setPage(pagination.totalPages || 1);
       }
     } catch (error) {
-      console.error('Failed to fetch resellers:', error);
-      setResellers([]);
+      console.error('Failed to fetch staffs:', error);
+      setStaffs([]);
       setTotalPages(1);
       setTotalRecords(0);
     } finally {
@@ -117,10 +110,10 @@ export function UserContent() {
   }, [page, limit, debouncedSearch, token]);
 
   useEffect(() => {
-    fetchResellers();
-  }, [fetchResellers]);
+    fetchStaffs();
+  }, [fetchStaffs]);
 
-  const columns: Column<Reseller>[] = [
+  const columns: Column<Staff>[] = [
     {
       key: 'image',
       label: 'IMAGE',
@@ -156,8 +149,22 @@ export function UserContent() {
       ),
     },
     {
-      key: 'commissionRate',
-      label: 'COMMISSION',
+      key: 'role',
+      label: 'ROLE',
+      render: (value) => <span className="text-sm font-medium text-gray-600">{value?.roleName || 'N/A'}</span>,
+    },
+    {
+      key: 'teams',
+      label: 'TEAMS',
+      render: (value) => (
+        <span className="text-sm text-gray-500">
+          {value?.length > 0 ? value.map((t: any) => t.name || t.teamName).join(', ') : 'None'}
+        </span>
+      ),
+    },
+    {
+      key: 'status',
+      label: 'STATUS',
       render: (value) => (
         <span className="text-sm font-medium text-gray-700">{value ? `${value}%` : '—'}</span>
       ),
@@ -185,64 +192,60 @@ export function UserContent() {
   ];
 
   const handleAdd = () => {
-    setEditingReseller(null);
+    setEditingStaff(null);
     setIsFormOpen(true);
   };
 
-  const handleEdit = async (row: Reseller) => {
+  const handleEdit = async (row: Staff) => {
     try {
       const res = await axios.get(`${baseUrl.findUserById}/${row.id}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
 
       const item = res.data?.data;
-      if (!item) throw new Error('Reseller not found');
+      if (!item) throw new Error('Staff not found');
 
-      setEditingReseller({
+      setEditingStaff({
         id: item._id,
         image: item.profileImage || '',
         fullName: item.fullName || '',
         phone: item.phone || '',
         email: item.email || '',
         status: item.status || 'active',
-        commissionRate: item.commissionRate || '',
-        address: item.address || '',
-        city: item.city || '',
-        state: item.state || '',
-        pincode: item.pincode || '',
-        Notes: item.Notes || '',
-        password: '',
+        role: item.role,
+        teams: item.teams || [],
+        organizations: item.organizations || [],
       });
       setIsFormOpen(true);
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Could not load reseller details');
+      toast.error(err?.response?.data?.message || 'Could not load staff details');
     }
   };
 
-  const handleDeleteClick = (row: Reseller) => {
-    setResellerToDelete(row);
+  const handleDeleteClick = (row: Staff) => {
+    setStaffToDelete(row);
     setShowDeleteDialog(true);
   };
 
   const handleConfirmDelete = async () => {
-    if (!resellerToDelete) return;
+    if (!staffToDelete) return;
     try {
-      await axios.delete(`${baseUrl.deleteUser}/${resellerToDelete.id}`, {
+      await axios.delete(`${baseUrl.deleteUser}/${staffToDelete.id}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
-      fetchResellers();
-      toast.success('Reseller deleted successfully');
+      fetchStaffs();
+      toast.success('Staff deleted successfully');
       setShowDeleteDialog(false);
-      setResellerToDelete(null);
+      setStaffToDelete(null);
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Failed to delete reseller');
+      toast.error(err?.response?.data?.message || 'Failed to delete staff');
     }
   };
 
   const handleSubmit = () => {
-    fetchResellers();
+    fetchStaffs();
     setIsFormOpen(false);
-    setEditingReseller(null);
+    setEditingStaff(null);
   };
 
   const canCreate = !!setupPermissions?.create;
@@ -253,12 +256,12 @@ export function UserContent() {
     <>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-1">Resellers</h1>
-          <p className="text-sm text-gray-500">Manage all reseller partners and their details.</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-1">Staffs</h1>
+          <p className="text-sm text-gray-500">Manage all staff partners and their details.</p>
         </div>
 
         <DataTable
-          data={resellers}
+          data={staffs}
           columns={columns}
           searchable
           pagination
@@ -280,7 +283,7 @@ export function UserContent() {
           actions
           addButton={
             canCreate
-              ? { label: 'Add Reseller', onClick: handleAdd }
+              ? { label: 'Add Staff', onClick: handleAdd }
               : undefined
           }
         />
@@ -291,14 +294,14 @@ export function UserContent() {
         isOpen={showDeleteDialog}
         onClose={() => {
           setShowDeleteDialog(false);
-          setResellerToDelete(null);
+          setStaffToDelete(null);
         }}
-        title="Delete Reseller"
+        title="Delete Staff"
         size="md"
         footer={
           <>
             <button
-              onClick={() => { setShowDeleteDialog(false); setResellerToDelete(null); }}
+              onClick={() => { setShowDeleteDialog(false); setStaffToDelete(null); }}
               className="rounded-lg cursor-pointer border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
               Cancel
@@ -314,26 +317,26 @@ export function UserContent() {
       >
         <div className="py-4">
           <p className="text-gray-700">
-            Are you sure you want to delete reseller <strong>"{resellerToDelete?.fullName}"</strong>?
+            Are you sure you want to delete staff <strong>"{staffToDelete?.fullName}"</strong>?
             This action cannot be undone.
           </p>
         </div>
       </DeleteDialog>
 
-      {/* Add / Edit Reseller Form */}
-      <ResellerForm
+      {/* Add / Edit Staff Form */}
+      <StaffForm
         isOpen={isFormOpen}
         onClose={() => {
           setIsFormOpen(false);
-          setEditingReseller(null);
+          setEditingStaff(null);
         }}
         onSubmit={handleSubmit}
-        initialData={editingReseller}
+        initialData={editingStaff}
       />
     </>
   );
 }
 
-export default function ResellerList() {
+export default function StaffList() {
   return <UserContent />;
 }

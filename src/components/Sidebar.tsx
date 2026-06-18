@@ -54,7 +54,6 @@ export default function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
   const [canViewCategory, setCanViewCategory] = useState(false);
   const [canViewProduct, setCanViewProduct] = useState(false);
   const [canViewStock, setCanViewStock] = useState(false);
-  const [canViewResellerLead, setCanViewResellerLead] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -90,8 +89,7 @@ export default function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
         setCanViewCategory(!!setupPerms.readAll);
         setCanViewProduct(!!setupPerms.readAll);
         setCanViewStock(!!setupPerms.readAll);
-        // Reseller leads visible to admin
-        setCanViewResellerLead(admin);
+        setCanViewStock(!!setupPerms.readAll);
       })
       .catch(() => {
         setIsAdmin(false);
@@ -105,7 +103,6 @@ export default function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
         setCanViewCategory(false);
         setCanViewProduct(false);
         setCanViewStock(false);
-        setCanViewResellerLead(false);
       });
   }, []);
 
@@ -117,11 +114,7 @@ export default function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
     menuItems.push({ icon: UserPlus, label: "Leads", path: "/leads" });
   }
 
-  if (canViewResellerLead) {
-    menuItems.push({ icon: Briefcase, label: "Reseller Leads", path: "/reseller-leads" });
-  }
-
-  if (canViewStaff) menuItems.push({ icon: Users, label: "Resellers", path: "/user-list" });
+  if (canViewStaff) menuItems.push({ icon: Users, label: "User", path: "/user-list" });
   if (canViewRole) menuItems.push({ icon: Building2, label: "Department Management", path: "/roles" });
   if (canViewLeadStatus) menuItems.push({ icon: Flag, label: "Lead Status", path: "/lead-status" });
   if (canViewCategory) menuItems.push({ icon: List, label: "Category", path: "/category" });

@@ -3,21 +3,16 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 export const baseUrl = {
   // ── Auth ──────────────────────────────────────────────────────────────
   userSignup: `${API}users/signup`,
-  userLogin: `${API}staff/login`,           // Admin login via Staff model
-  currentStaff: `${API}staff/me`,           // Get current logged-in admin
+  userLogin: `${API}auth/login`,           // Unified login via Reseller model
+  currentStaff: `${API}reseller/me`,           // Get current logged-in admin
 
-  // ── Reseller (was "Staff/User") ───────────────────────────────────────
-  userAdd: `${API}reseller/create`,         // Create reseller
-  userUpdate: `${API}reseller`,             // PUT /:id
-  getAllUsers: `${API}reseller`,            // GET all resellers
-  findUserById: `${API}reseller`,           // GET /:id
-  deleteUser: `${API}reseller`,             // DELETE /:id
-  currentReseller: `${API}reseller/me`,     // Get current logged-in reseller
+  // ── Users (Staff) ─────────────────────────────────────────────────────
+  userAdd: `${API}reseller/create`,
+  userUpdate: `${API}reseller`,
+  getAllUsers: `${API}reseller`,
+  findUserById: `${API}reseller`,
+  deleteUser: `${API}reseller`,
 
-  // ── Reseller Leads ────────────────────────────────────────────────────
-  resellerLeads: `${API}reseller-lead`,
-  createResellerLead: `${API}reseller-lead/create`,
-  resellerLeadById: `${API}reseller-lead`,
 
   // ── Roles ─────────────────────────────────────────────────────────────
   addRole: `${API}role`,
@@ -28,11 +23,11 @@ export const baseUrl = {
   department: `${API}role`,
 
   // ── Staff (internal users - kept for reference) ───────────────────────
-  addStaff: `${API}staff/create`,
-  getAllStaff: `${API}staff`,
-  findStaffById: `${API}staff`,
-  updateStaff: `${API}staff`,
-  deleteStaff: `${API}staff`,
+  addStaff: `${API}reseller/create`,
+  getAllStaff: `${API}reseller`,
+  findStaffById: `${API}reseller`,
+  updateStaff: `${API}reseller`,
+  deleteStaff: `${API}reseller`,
 
   // ── Leads ─────────────────────────────────────────────────────────────
   addLead: `${API}lead/create`,
