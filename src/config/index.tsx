@@ -81,6 +81,9 @@ export const baseUrl = {
   stock: `${API}stock`,
   getBaseUrl: API,
   projectDetail: `${API}project-detail`,
+  myNotifications: `${API}notification/my-notifications`,
+  markNotificationRead: `${API}notification/mark-read`,
+  markAllNotificationsRead: `${API}notification/mark-all-read`,
 };
 
 // ── Token Helpers ───────────────────────────────────────────────────────────

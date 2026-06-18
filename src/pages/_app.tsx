@@ -14,6 +14,8 @@ const poppins = Poppins({
   display: "swap",
 });
 
+import Head from "next/head";
+
 export default function App({ Component, pageProps }: AppProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const pathName = usePathname()
@@ -32,8 +34,12 @@ export default function App({ Component, pageProps }: AppProps) {
   }
 
   return (
-    <div className={poppins.className}>
-      <div className="flex min-h-screen bg-white">
+    <>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </Head>
+      <div className={poppins.className}>
+        <div className="flex min-h-screen bg-white">
         {!isLoginPage && (
           <Sidebar
             isOpen={isSidebarOpen}
@@ -68,5 +74,6 @@ export default function App({ Component, pageProps }: AppProps) {
         theme="colored"
       />
     </div>
+    </>
   );
 }

@@ -801,8 +801,8 @@
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                <div className="h-[280px]">
-                  <ResponsiveContainer width="100%" height="100%">
+                <div className="h-[280px] w-full min-h-0 min-w-0">
+                  <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                     <PieChart>
                       <Pie
                         data={statusChartData}
@@ -861,8 +861,8 @@
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                  <div className="h-[280px]">
-                    <ResponsiveContainer width="100%" height="100%">
+                  <div className="h-[280px] w-full min-h-0 min-w-0">
+                    <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                       <PieChart>
                         <Pie
                           data={leadsBySource}
